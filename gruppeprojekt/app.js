@@ -18,4 +18,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 module.exports = app;
+<<<<<<< HEAD
 // test 
+=======
+hejfjefe
+>>>>>>> a492949105215e8e3e5830741b0a095d40e1047e
