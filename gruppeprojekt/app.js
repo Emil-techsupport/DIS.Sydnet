@@ -21,6 +21,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/services', servicesRouter);
-app.get("/", (req, res)=> res.send("proxy server kører fint"))
 
 module.exports = app;
