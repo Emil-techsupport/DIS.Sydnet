@@ -1,13 +1,13 @@
 const proxyService = require('../services/proxyService');
 
 // GET events fra alle værter via proxy
-async function getEvents(req, res, next) {
+async function getEvents(req, res) {
   try {
-    const results = await proxyService.fetchEventsFromHosts();
+    const results = await proxyService.fetchEventsFromHosts(); // Henter data fra alle værter via proxy 
+   // sender data til klienten
     res.json({
       success: true,
       data: results,
-      count: results.length
     });
   } catch (error) {
     console.error('Fejl i controller:', error);
@@ -17,7 +17,7 @@ async function getEvents(req, res, next) {
     });
   }
 }
-
+// Eksporterer getEvents funktionen så den kan bruges i app.js
 module.exports = {
   getEvents
 };
