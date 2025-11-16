@@ -1,1 +1,0 @@
-// evt skal dette blive lavet om til en pop up hvor man sender en besked
