@@ -8,12 +8,29 @@ const axios = require("axios");
 // Importerer hosts array fra mock database 
 const {hosts} = require('../data/mockDB');
 
+// Importerer caching service til at cachee responses
+const cache = require('./caching');
+
 /**
  * Hovedfunktion: Henter events/data fra alle aktive værter via proxy
  * Array med data fra alle værter inkl. RTT målinger
  */
 async function fetchEventsFromHosts() {
   try {
+    // Cache key til at identificere cached data
+    const cacheKey = 'vearter_data';
+    
+    // Tjek om data allerede er i cache
+    // Hvis cache findes og ikke er udløbet, returner cached data (hurtigere!)
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      console.log('Returning data from cache'); // Logger at cache bruges
+      return cachedData;
+    }
+    
+    // Hvis ikke i cache, hent data fra API'er
+    console.log('Cache miss - fetching from APIs'); // Logger at data hentes
+    
     // Array til at gemme alle async requests (promises)
     // Disse vil blive kørt parallelt samtidigt
     const requests = [];
@@ -76,6 +93,13 @@ async function fetchEventsFromHosts() {
     // Når alle er færdige, får vi et array med alle resultaterne
     // Dette er meget hurtigere end at vente på hver request én ad gangen
     const results = await Promise.all(requests);
+    
+    // Gem resultater i cache for fremtidige requests
+    // TTL (Time To Live) = 60000 ms = 60 sekunder
+    // Dette betyder at cached data er gyldig i 60 sekunder
+    // Efter 60 sekunder vil cache udløbe og data hentes igen fra API'er
+    cache.set(cacheKey, results, 60000);
+    console.log('Data cached for 60 seconds'); // Logger at data er cached
     
     // Returnerer array med alle resultater fra alle værter
     // Hvert element i arrayet er et objekt med vært info + data (se proxyRequest return)
