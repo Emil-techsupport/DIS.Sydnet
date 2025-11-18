@@ -7,6 +7,8 @@ module.exports = {
     {
       name: 'app-server1',
       script: './bin/www',
+      instances: 1,
+      exec_mode: 'fork',
       env: {
         PORT: 4000,
         NODE_ENV: 'production'
@@ -15,6 +17,8 @@ module.exports = {
     {
       name: 'app-server2',
       script: './bin/www',
+      instances: 1,
+      exec_mode: 'fork',
       env: {
         PORT: 4001,
         NODE_ENV: 'production'
@@ -23,6 +27,8 @@ module.exports = {
     {
       name: 'app-server3',
       script: './bin/www',
+      instances: 1,
+      exec_mode: 'fork',
       env: {
         PORT: 4002,
         NODE_ENV: 'production'
