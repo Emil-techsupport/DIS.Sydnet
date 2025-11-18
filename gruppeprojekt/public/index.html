@@ -274,15 +274,7 @@
       color: #6b7280;
       line-height: 1.4;
     }
-    /*
-    @media (max-width: 960px) {
-      .sidebar { display: none; }
-      .main { padding: 20px; }
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    */
+
   </style>
 </head>
 <body>
@@ -326,7 +318,7 @@
       <div class="main-header">
         <h1 class="title">Oplevelser</h1>
         <!-- eneste interaktive element -->
-        <button class="primary-btn" id="createExperienceBtn">+ Oplevelse</button>
+        <button class="primary-btn" id="oplevelserknap">+ Oplevelse</button>
       </div>
 
       <div class="filters">
@@ -375,10 +367,19 @@
   </div>
 
   <script>
+  /*
     // Når man klikker på + Oplevelse-knappen, går vi til en ny side
-    document.getElementById("createExperienceBtn").addEventListener("click", function () {
-      window.location.href = "./oplevelse.html";
+    document.getElementById("oplevelserknap").addEventListener("click", function () {
+      window.location.href = "/oplevelse";
     });
+*/
+document
+  .getElementById("oplevelserknap")
+  .addEventListener("click", function () {
+    window.location.href = "/oplevelse";   // ikke /public/oplevelse
+  });
+
+
   </script>
 </body>
 </html>
