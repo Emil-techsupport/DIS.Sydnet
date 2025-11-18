@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Bruger srequest på /serivces/ videresender til servicesRouter 
+// Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
 
 module.exports = app;
