@@ -367,10 +367,18 @@
   </div>
 
   <script>
+  /*
     // Når man klikker på + Oplevelse-knappen, går vi til en ny side
     document.getElementById("oplevelserknap").addEventListener("click", function () {
       window.location.href = "/oplevelse";
     });
+*/
+    document
+  .getElementById("oplevelserknap")
+  .addEventListener("click", function () {
+    window.location.href = "/oplevelse";   // ikke /public/oplevelse
+  });
+
   </script>
 </body>
 </html>

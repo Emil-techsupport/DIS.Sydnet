@@ -9,9 +9,17 @@ router.get('/', function(req, res, next) {
 });
 */
 
-
+/*
 router.get('/oplevelse', function (req, res) {
     res.render('public/oplevelse');
 });
+*/
+
+const path = require("path");
+
+router.get("/oplevelse", function (req, res) {
+  res.sendFile(path.join(__dirname, "../public/oplevelse.html"));
+});
+
 
 module.exports = router;
