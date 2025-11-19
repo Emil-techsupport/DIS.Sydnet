@@ -8,6 +8,9 @@ const axios = require("axios");
 // Importerer hosts array fra mock database 
 const {hosts} = require('../data/mockDB');
 
+// Importerer dansk mock events data
+const {getRandomEvent} = require('../data/mockEvents');
+
 // Importerer caching service til at cachee responses
 const cache = require('./caching');
 
@@ -45,9 +48,12 @@ async function fetchEventsFromHosts() {
       // RTT = hvor lang tid det tager at hente data fra API
       const start = Date.now();
       
-      // Henter data fra værtens API endpoint (ekstern HTTP request)
-      // await = venter på at requesten er færdig før vi fortsætter
-      const response = await axios.get(host.apiUrl);
+      // Simulerer API request med dansk mock data
+      // I stedet for at hente fra jsonplaceholder, bruger vi dansk mock data
+      await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
+      
+      // Henter dansk mock event data baseret på vært navn
+      const mockEvent = getRandomEvent(host.navn);
       
       // Beregner RTT ved at trække starttid fra nuværende tid
       // Resultatet er i millisekunder (ms)
@@ -57,9 +63,6 @@ async function fetchEventsFromHosts() {
       // Viser hvilken vært og hvor hurtigt den svarede
       console.log(`${host.navn} - RTT: ${rtt}ms`);
       
-      // Gemmer hentet data fra API response
-      let data = response.data;
-
       // Returnerer struktureret objekt med vært info + hentet data
       // Dette objekt sendes videre til controller og derefter til klienten
       return {
@@ -70,7 +73,7 @@ async function fetchEventsFromHosts() {
         status: host.status,      
         ID: host.værtID,          
         rtt,                      
-        data: response.data      
+        data: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
       };
     }
 

@@ -275,6 +275,7 @@
       line-height: 1.4;
     }
 
+
   </style>
 </head>
 <body>
@@ -328,15 +329,12 @@
         <button class="filter-pill">Alfabetisk</button>
       </div>
 
-      <section class="experience-card">
-        <div class="experience-image">
-          <div class="draft-badge">● Kladde</div>
+      <!-- Container til dynamiske events - bruger samme experience-card stil -->
+      <div id="events-container">
+        <div style="text-align: center; padding: 40px; color: #6b7280;" id="loading-message">
+          Henter oplevelser...
         </div>
-        <div class="experience-content">
-          <div class="experience-title">Ingen titel angivet</div>
-          <div class="experience-subtitle">Standardoplevelse</div>
-        </div>
-      </section>
+      </div>
 
       <section>
         <h2 class="settings-section-title">Indstillinger</h2>
@@ -368,19 +366,110 @@
   </div>
 
   <script>
-  /*
-    // Når man klikker på + Oplevelse-knappen, går vi til en ny side
+    // Hent events fra API når siden loader
+    async function loadEvents() {
+      const container = document.getElementById('events-container');
+      const loadingMessage = document.getElementById('loading-message');
+      
+      try {
+        // Hent data fra API
+        const response = await fetch('/services/events');
+        const result = await response.json();
+        
+        
+        if (result.success && result.data) {
+          // Vis alle events fra alle værter
+          displayEvents(result.data);
+        } else {
+          container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Kunne ikke hente oplevelser: ' + (result.error || 'Ukendt fejl') + '</div>';
+        }
+      } catch (error) {
+        if (loadingMessage) loadingMessage.remove();
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Der opstod en fejl ved hentning af data: ' + error.message + '</div>';
+      }
+    }
+
+    // Vis events i UI - bruger samme experience-card struktur
+    function displayEvents(events) {
+      const container = document.getElementById('events-container');
+      
+        if (!events || events.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">Ingen oplevelser fundet</div>';
+        return;
+      }
+
+      // Tøm container først
+      container.innerHTML = '';
+
+      // Loop gennem alle events
+      for (let i = 0; i < events.length; i++) {
+        const event = events[i];
+        
+        // Hent event data direkte
+        const eventData = event.data;
+        
+        // Start med standard værdier
+        let title = 'Ingen titel angivet';
+        let subtitle = 'Standardoplevelse';
+        
+        // Hvis vi har event data med en titel, brug den
+        if (eventData && eventData.title) {
+          // Sæt titlen til event data titlen
+          title = eventData.title;
+          
+          // Byg beskrivelsen op stykke for stykke
+          let beskrivelseTekst = '';
+          
+          // Tilføj beskrivelse hvis den findes
+          if (eventData.beskrivelse) {
+            beskrivelseTekst = eventData.beskrivelse;
+          }
+          
+          // Tilføj dato og tid hvis de findes
+          if (eventData.dato && eventData.tid) {
+            if (beskrivelseTekst) {
+              beskrivelseTekst += ' • ';  // Tilføj separator hvis der allerede er tekst
+            }
+            beskrivelseTekst += `${eventData.dato} kl. ${eventData.tid}`;
+          }
+          
+     
+        
+          // Brug den byggede beskrivelse, eller standard hvis den er tom
+          subtitle = beskrivelseTekst || 'Standardoplevelse';
+          
+        } else {
+          // Hvis vi ikke har event data, brug vært information i stedet
+          title = `${event.kategori || 'Oplevelse'} hos ${event.source}`;
+          subtitle = `Lokation: ${event.lokation}`;
+        }
+        
+        // Opret experience-card - SAMME struktur som den oprindelige
+        const card = document.createElement('section');
+        card.className = 'experience-card';
+        
+        // Generer HTML - PRÆCIS samme struktur som den oprindelige experience-card
+        card.innerHTML = `
+          <div class="experience-image">
+            <div class="draft-badge">${event.kategori || 'Oplevelse'}</div>
+          </div>
+          <div class="experience-content">
+            <div class="experience-title">${title}</div>
+            <div class="experience-subtitle">${subtitle}</div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      }
+    }
+
+    // Knap funktionalitet
     document.getElementById("oplevelserknap").addEventListener("click", function () {
       window.location.href = "/oplevelse";
     });
-*/
-document
-  .getElementById("oplevelserknap")
-  .addEventListener("click", function () {
-    href = "/oplevelse";   // ikke /public/oplevelse
-  });
 
-
+    // Hent events når siden loader
+    loadEvents();
 
   </script>
 </body>
