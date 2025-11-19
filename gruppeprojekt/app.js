@@ -5,10 +5,9 @@ const logger = require('morgan');
 var indexRouter = require('./routes/routerView');
 
 
-// importer routerne
+// importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
-// OBS OBS...Husk Tænker det er bedst vi tøljer en route af gangen når vi arbejder med det
-// men vi mangler self alle de andre filer... 
+// importer routerne til view filen 
 const viewRouter = require('./routes/routerView');
 
 const app = express();
@@ -35,5 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
+app.use('view',viewRouter);
 
 module.exports = app;
