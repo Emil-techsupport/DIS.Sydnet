@@ -47,48 +47,19 @@
       <div class="main-header">
         <h1 class="title">Oplevelser</h1>
         <!-- eneste interaktive element -->
-         <a href="/oplevelser">Videre til oplevelser</a>
         <button class="primary-btn" id="oplevelserknap">+ Oplevelse</button>
       </div>
 
       <div class="filters">
         <button class="filter-pill active">Live</button>
         <button class="filter-pill">Arkiveret</button>
-        <button class="filter-pill">Alfabetisk</button>
       </div>
 
             <!-- Container til dynamiske events - bruger samme experience-card stil -->
       <div id="events-container">
-        <div style="text-align: center; padding: 40px; color: #6b7280;" id="loading-message">
+        <button style="text-align: center; padding: 40px; color: #6b7280; cursor: pointer;" id="loading-message">
           Henter oplevelser...
-        </div>
-
-      <section>
-        <h2 class="settings-section-title">Indstillinger</h2>
-        <div class="settings-grid">
-          <div class="settings-card">
-            <div class="settings-icon"></div>
-            <div class="settings-title">Lokationer</div>
-            <div class="settings-text">
-              Tilføj og administrer de steder, hvor dine oplevelser finder sted.
-            </div>
-          </div>
-          <div class="settings-card">
-            <div class="settings-icon"></div>
-            <div class="settings-title">Ressourcer</div>
-            <div class="settings-text">
-              Administrer og tildel udstyret til dine oplevelser.
-            </div>
-          </div>
-          <div class="settings-card">
-            <div class="settings-icon"></div>
-            <div class="settings-title">Kategori</div>
-            <div class="settings-text">
-              Kategorier hjælper dine gæster med at finde den rigtige oplevelse.
-            </div>
-          </div>
-        </div>
-      </section>
+        </button>
     </main>
   </div>
 
@@ -160,7 +131,6 @@
             beskrivelseTekst += `${eventData.dato} kl. ${eventData.tid}`;
           }
           
-     
         
           // Brug den byggede beskrivelse, eller standard hvis den er tom
           subtitle = beskrivelseTekst || 'Standardoplevelse';
@@ -174,29 +144,29 @@
         // Opret experience-card - SAMME struktur som den oprindelige
         const card = document.createElement('section');
         card.className = 'experience-card';
+        card.style.cursor = "pointer";
         
         // Generer HTML - PRÆCIS samme struktur som den oprindelige experience-card
         card.innerHTML = `
-          <div class="experience-image">
-            <div class="draft-badge">${event.kategori || 'Oplevelse'}</div>
-          </div>
-          <div class="experience-content">
-            <div class="experience-title">${title}</div>
-            <div class="experience-subtitle">${subtitle}</div>
-          </div>
-        `;
-        
+        <div class="experience-image">
+          <div class="draft-badge">${event.kategori || 'Oplevelse'}</div>
+        </div>
+        <div class="experience-content">
+          <div class="experience-title">${title}</div>
+          <div class="experience-subtitle">${subtitle}</div>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        window.location.href = "/oplevelser";
+      });  
+
         container.appendChild(card);
       }
     }
 
-    // Knap funktionalitet
-    document.getElementById("oplevelserknap").addEventListener("click", function () {
-      window.location.href = "/Oplevelser.html";
-    });
-
-    // Hent events når siden loader
-    loadEvents();
+  // Hent events når siden loader
+  loadEvents();
 
   </script>
 </body>
