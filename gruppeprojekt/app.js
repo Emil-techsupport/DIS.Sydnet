@@ -34,6 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
-app.use('view',viewRouter);
+app.use('/view',viewRouter);
 
 module.exports = app;
