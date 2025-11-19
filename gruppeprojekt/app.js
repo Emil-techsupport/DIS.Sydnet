@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var indexRouter = require('./routes/routerview');
 
-
 // importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
 // importer routerne til view filen 
@@ -37,6 +36,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
-app.use('/view',viewRouter);
+//app.use('/view',viewRouter);
 
 module.exports = app;
