@@ -2,14 +2,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-var indexRouter = require('./routes/routerview');
+var indexRouter = require('./routes/routerView');
 
 
 // importer routerne
 const servicesRouter = require('./routes/proxyRoutes');
 // OBS OBS...Husk Tænker det er bedst vi tøljer en route af gangen når vi arbejder med det
 // men vi mangler self alle de andre filer... 
-
+const viewRouter = require('./routes/routerView');
 
 const app = express();
 // LOADBALANCING MIDDLEWARE
