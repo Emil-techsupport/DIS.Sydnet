@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var indexRouter = require('./routes/routerView');
-
+/**/
 
 // importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
