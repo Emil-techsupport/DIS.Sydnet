@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
+var indexRouter = require('./routes/routerview');
 
 
 // importer routerne
@@ -30,6 +30,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/', indexRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Bruger request på /services/ videresender til servicesRouter 
