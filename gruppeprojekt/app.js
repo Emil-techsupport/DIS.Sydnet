@@ -8,7 +8,7 @@ var indexRouter = require('./routes/routerView');
 // importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
 // importer routerne til view filen 
-const viewRouter = require('./routes/routerView');
+//const viewRouter = require('./routes/routerView');
 
 const app = express();
 // LOADBALANCING MIDDLEWARE
@@ -34,6 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
-app.use('/view',viewRouter);
+//app.use('/view',viewRouter);
 
 module.exports = app;
