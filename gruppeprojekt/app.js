@@ -2,13 +2,12 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-var indexRouter = require('./routes/routerView');
-/**/
+var indexRouter = require('./routes/routerview');
 
 // importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
 // importer routerne til view filen 
-//const viewRouter = require('./routes/routerView');
+const viewRouter = require('./routes/routerview');
 
 const app = express();
 // LOADBALANCING MIDDLEWARE
@@ -29,9 +28,12 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/', indexRouter);
+
+// Static files skal komme FØR routeren, så CSS/JS filer bliver serveret korrekt
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Routere
+app.use('/', indexRouter);
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
 //app.use('/view',viewRouter);
