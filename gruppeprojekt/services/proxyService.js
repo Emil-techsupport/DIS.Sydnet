@@ -49,10 +49,10 @@ async function fetchEventsFromHosts() {
       const start = Date.now();
       
       // Simulerer API request med dansk mock data
-      // I stedet for at hente fra jsonplaceholder, bruger vi dansk mock data
+      // henter mock vært data fra mockDB.js
       await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
       
-      // Henter dansk mock event data baseret på vært navn
+      // Henter mock event data baseret på vært navn
       const mockEvent = getRandomEvent(host.navn);
       
       // Beregner RTT ved at trække starttid fra nuværende tid
@@ -73,7 +73,7 @@ async function fetchEventsFromHosts() {
         status: host.status,      
         ID: host.værtID,          
         rtt,                      
-        data: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
+        data: mockEvent || null      // mock data (direkte objekt, ikke array)
       };
     }
 
