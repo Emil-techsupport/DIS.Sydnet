@@ -4,58 +4,19 @@
 const hosts = [
   {
     værtID: 1,
-    navn: "Yoga by Anna",
-    email: "anna@yogabyanna.dk",
+    navn: "Anna",
+    email: "anna@events.dk",
     telefonNr: "+45 12 34 56 78",
     lokation: "København",
-    kategori: "Health & Yoga",
-    apiUrl: "https://jsonplaceholder.typicode.com/posts", // Mock API endpoint
-    oprettetDato: "2024-01-15",
-    status: "active"
+    apiUrl: "https://jsonplaceholder.typicode.com/posts"
   },
   {
     værtID: 2,
-    navn: "Vin & Fjord",
-    email: "kontakt@vinogfjord.dk",
+    navn: "Tim",
+    email: "tim@events.dk",
     telefonNr: "+45 23 45 67 89",
     lokation: "København",
-    kategori: "Food & Tastings",
-    apiUrl: "https://jsonplaceholder.typicode.com/users", // Mock API endpoint
-    oprettetDato: "2024-02-20",
-    status: "inactive"
-  },
-  {
-    værtID: 3,
-    navn: "Sauna & Silence",
-    email: "info@saunasilence.dk",
-    telefonNr: "+45 34 56 78 90",
-    lokation: "Aarhus",
-    kategori: "Health & Yoga",
-    apiUrl: "https://jsonplaceholder.typicode.com/comments", // Mock API endpoint
-    oprettetDato: "2024-03-10",
-    status: "inactive"
-  },
-  {
-    værtID: 4,
-    navn: "Copenhagen Adventures",
-    email: "hello@cphadventures.dk",
-    telefonNr: "+45 45 67 89 01",
-    lokation: "København",
-    kategori: "Adventure",
-    apiUrl: "https://jsonplaceholder.typicode.com/posts", // Mock API endpoint
-    oprettetDato: "2024-01-05",
-    status: "active"
-  },
-  {
-    værtID: 5,
-    navn: "Aarhus Food Tours",
-    email: "info@aarhusfoodtours.dk",
-    telefonNr: "+45 56 78 90 12",
-    lokation: "Aarhus",
-    kategori: "Tours",
-    apiUrl: "https://jsonplaceholder.typicode.com/users", // Mock API endpoint
-    oprettetDato: "2024-02-28",
-    status: "active"
+    apiUrl: "https://jsonplaceholder.typicode.com/users"
   }
 ];
 
