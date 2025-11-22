@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-var indexRouter = require('./routes/routerview');
+var indexRouter = require('./routes/routerview'); 
 
 // importer routerne til service logiken
 const servicesRouter = require('./routes/proxyRoutes');
 // importer routerne til view filen 
 const viewRouter = require('./routes/routerview');
+// importer routerne til kollab/SMS funktionalitet
+const kollabRouter = require('./routes/kollabRoutes');
 
 const app = express();
 // LOADBALANCING MIDDLEWARE
@@ -37,5 +39,7 @@ app.use('/', indexRouter);
 // Bruger request på /services/ videresender til servicesRouter 
 app.use('/services', servicesRouter);
 app.use('/view',viewRouter);
+// API routes for kollab/SMS
+app.use('/api/kollab', kollabRouter);
 
 module.exports = app;
