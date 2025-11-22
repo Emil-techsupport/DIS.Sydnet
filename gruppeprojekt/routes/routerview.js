@@ -12,5 +12,14 @@ router.get('/oplevelser', function(req, res) {
   res.sendFile(path.join(__dirname, '../view/oplevelser.html'));
 });
 
+router.get('/kollab', function(req, res) {
+  res.sendFile(path.join(__dirname, '../view/kollabside.html'));
+});
+
+router.get('/search', function(req, res) {
+  res.sendFile(path.join(__dirname, '../view/search.html'));
+});
+
+
 module.exports = router;
 

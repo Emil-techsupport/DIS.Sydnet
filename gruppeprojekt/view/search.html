@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <link rel="stylesheet" href="/search.css">
+  <meta charset="UTF-8" />
+  <title>Søg Oplevelser - Kollab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo-box">Understory</div>
+        <nav>
+          <div class="nav-section">
+            <div class="nav-item">
+              <span><a href="/" style="text-decoration: none; color: inherit;">Hjem</a></span>
+            </div>
+            <div class="nav-item">
+              <span>Kalender</span>
+            </div>
+            <div class="nav-item">
+              <span><a href="/oplevelser" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
+            </div>
+            <div class="nav-item active">
+              <span>Søg & Kollab</span>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="main-header">
+        <h1 class="title">Søg Oplevelser</h1>
+        <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
+          Find oplevelser og start kollaboration med andre værter
+        </p>
+      </div>
+
+      <!-- Søge container -->
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-box" 
+          placeholder="Søg efter oplevelser, værter, kategorier..."
+          autocomplete="off"
+        />
+        
+        <div class="filters-row">
+          <select id="category-filter" class="filter-select">
+            <option value="">Alle kategorier</option>
+            <option value="Health & Yoga">Health & Yoga</option>
+            <option value="Food & Tastings">Food & Tastings</option>
+            <option value="Wellness & Spa">Wellness & Spa</option>
+            <option value="Adventure & Activities">Adventure & Activities</option>
+          </select>
+          
+          <select id="location-filter" class="filter-select">
+            <option value="">Alle lokationer</option>
+            <option value="København">København</option>
+            <option value="Aarhus">Aarhus</option>
+            <option value="Odense">Odense</option>
+          </select>
+        </div>
+        
+        <div class="search-stats" id="search-stats" style="display: none;">
+          Fundet <strong id="result-count">0</strong> oplevelser
+        </div>
+      </div>
+
+      <!-- Søgeresultater -->
+      <div id="search-results" class="search-results">
+        <div class="no-results">
+          <p>Indtast en søgning for at finde oplevelser</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let allEvents = []; // Gemmer alle events
+    
+    // Hent alle events når siden loader
+    async function loadAllEvents() {
+      try {
+        const response = await fetch('/services/events');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          allEvents = result.data;
+          // Vis alle events som standard
+          displayResults(allEvents);
+        }
+      } catch (error) {
+        console.error('Fejl ved hentning af events:', error);
+        document.getElementById('search-results').innerHTML = 
+          '<div class="no-results">Kunne ikke hente oplevelser. Prøv igen senere.</div>';
+      }
+    }
+    
+    // Søge funktion
+    function searchEvents() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+      const categoryFilter = document.getElementById('category-filter').value;
+      const locationFilter = document.getElementById('location-filter').value;
+      
+      let filtered = allEvents;
+      
+      // Filtrer efter søgeterm
+      if (searchTerm) {
+        filtered = filtered.filter(event => {
+          const title = event.data?.title?.toLowerCase() || '';
+          const beskrivelse = event.data?.beskrivelse?.toLowerCase() || '';
+          const source = event.source?.toLowerCase() || '';
+          const kategori = event.kategori?.toLowerCase() || '';
+          
+        if (title.includes(searchTerm)) return true; 
+        if (beskrivelse.includes(searchTerm)) return true;
+        if (source.includes(searchTerm)) return true;
+        if (kategori.includes(searchTerm)) return true;
+        return false;
+      });
+    };
+      // Filtrer efter kategori
+      if (categoryFilter) {
+        filtered = filtered.filter(event => event.kategori === categoryFilter);
+      }
+      
+      // Filtrer efter lokation
+      if (locationFilter) {
+        filtered = filtered.filter(event => event.lokation === locationFilter);
+      }
+      
+      displayResults(filtered);
+    }
+    
+    // Vis søgeresultater
+    function displayResults(filteredEvents) {
+      const container = document.getElementById('search-results');
+      const statsDiv = document.getElementById('search-stats');
+      const countSpan = document.getElementById('result-count');
+      
+      // Tjek hvor mange resultater vi har
+      const antalResultater = filteredEvents.length;
+      const søgeTekst = document.getElementById('search-input').value.trim();
+      const harSøgt = søgeTekst.length > 0;
+      
+      // Vis statistik hvis brugeren har søgt eller der er resultater
+      if (antalResultater > 0 || harSøgt) {
+        statsDiv.style.display = 'block';  // Vis statistik
+        countSpan.textContent = antalResultater;  // Opdater antal
+      } else {
+        statsDiv.style.display = 'none';  // Skjul statistik
+      }
+      
+      // Hvis ingen resultater fundet, vis besked og stop
+      if (antalResultater === 0) {
+        container.innerHTML = '<div class="no-results">Ingen oplevelser fundet. Prøv at ændre dine søgekriterier.</div>';
+        return;  // Stop funktionen her
+      }
+      
+      container.innerHTML = '';
+      // går igennem hver eneste event og genererer en card for hver event
+      filteredEvents.forEach(event => {
+        const eventData = event.data;
+        const card = document.createElement('div');
+        card.className = 'result-card';
+    
+        card.innerHTML = `
+          <div class="result-header">
+            <div style="flex: 1;">
+              <div class="result-title">${eventData?.title || `${event.kategori} hos ${event.source}`}</div>
+              <div class="result-subtitle">${event.source} • ${event.lokation}</div>
+            </div>
+            <button class="collab-btn">
+              Kollab
+            </button>
+          </div>
+          
+          ${eventData?.beskrivelse ? `
+            <p style="font-size: 14px; color: #6b7280; margin: 12px 0; line-height: 1.5;">
+              ${eventData.beskrivelse}
+            </p>
+          ` : ''}
+          
+          <div class="result-details">
+            ${eventData?.dato ? `
+              <div class="result-detail-item">
+                <div class="result-detail-label">Dato</div>
+                <div class="result-detail-value">${eventData.dato}</div>
+              </div>
+            ` : ''}
+            ${eventData?.tid ? `
+              <div class="result-detail-item">
+                <div class="result-detail-label">Tid</div>
+                <div class="result-detail-value">${eventData.tid}</div>
+              </div>
+            ` : ''}
+            ${eventData?.varighed ? `
+              <div class="result-detail-item">
+                <div class="result-detail-label">Varighed</div>
+                <div class="result-detail-value">${eventData.varighed}</div>
+              </div>
+            ` : ''}
+            
+          </div>
+        `;
+        
+        // Gem event data i card elementet
+        card.dataset.eventData = JSON.stringify(event);
+        
+        // Find knappen i kortet
+        const kollabKnap = card.querySelector('.collab-btn');
+        
+        // Når man klikker på knappen
+        kollabKnap.addEventListener('click', function() {
+          // Hent event-data fra kortet
+          const eventData = JSON.parse(card.dataset.eventData);
+          
+          // Konverter til URL-format
+          const dataForURL = encodeURIComponent(JSON.stringify(eventData));
+          
+          // Gå til kollab-siden
+          window.location.href = `/kollab?event=${dataForURL}`;
+        });
+        
+        container.appendChild(card);
+      });
+    }
+    
+    // Event listeners
+    // når brugeren skriver i søgefeltet, søger vi efter events
+    document.getElementById('search-input').addEventListener('input', searchEvents);
+    // når brugeren vælger en kategori, søger vi efter events
+    document.getElementById('category-filter').addEventListener('change', searchEvents);
+    // når brugeren vælger en lokation, søger vi efter events
+    document.getElementById('location-filter').addEventListener('change', searchEvents);
+    
+    // Load events når siden loader
+    window.addEventListener('DOMContentLoaded', loadAllEvents);
+  </script>
+</body>
+</html>
+

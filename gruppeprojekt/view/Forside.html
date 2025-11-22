@@ -150,13 +150,13 @@
           subtitle = `Lokation: ${host.lokation}`;
         }
         
-        // Opret experience-card - SAMME struktur som den oprindelige
+        // Opret experience-card -
         const card = document.createElement('section');
         card.className = 'experience-card';
         card.dataset.id = host.id;
         card.style.cursor = "pointer";
         
-        // Generer HTML - PRÆCIS samme struktur som den oprindelige experience-card
+        // Generer HTML 
         card.innerHTML = `
         <div class="experience-image">
           <div class="draft-badge">${host.kategori || 'Oplevelse'}</div>
