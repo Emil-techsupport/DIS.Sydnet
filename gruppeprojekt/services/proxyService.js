@@ -6,10 +6,11 @@
 const axios = require("axios");
 
 // Importerer hosts array fra mock database 
-const {hosts} = require('../data/mockDB');
+const {hosts} = require('../data/mockHosts');
 
 // Importerer dansk mock events data
 const {getRandomEvent} = require('../data/mockEvents');
+const {getEventsByHost2} = require('../data/mockEvents');
 
 // Importerer caching service til at cachee responses
 const cache = require('./caching');
@@ -40,7 +41,7 @@ async function fetchEventsFromHosts() {
 
     /**
      * Hjælpefunktion: Henter data fra en enkelt vært og måler RTT
-     * host - Vært objekt fra mockDB med apiUrl, navn, osv.
+     * host - Vært objekt fra mockHosts med apiUrl, navn, osv.
      *  Objekt med vært info, RTT og hentet data
      */
     async function proxyRequest(host) {
@@ -54,7 +55,10 @@ async function fetchEventsFromHosts() {
       
       // Henter dansk mock event data baseret på vært navn
       const mockEvent = getRandomEvent(host.navn);
-      
+      //const mockEvent2 = getEventsByHost2(host.navn);
+
+      console.log("********Mockevent*********");
+      console.log(mockEvent);
       // Beregner RTT ved at trække starttid fra nuværende tid
       // Resultatet er i millisekunder (ms)
       const rtt = Date.now() - start;
@@ -66,16 +70,17 @@ async function fetchEventsFromHosts() {
       // Returnerer struktureret objekt med vært info + hentet data
       // Dette objekt sendes videre til controller og derefter til klienten
       return {
-        source: host.navn,       
+        navn: host.navn,       
         URL: host.apiUrl,         
         kategori: host.kategori,  
         lokation: host.lokation,  
         status: host.status,      
         ID: host.værtID,          
         rtt,                      
-        data: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
+        events: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
       };
     }
+    
 
     // Filtrerer hosts array for kun at få aktive værter
     // Dette sikrer at vi kun henter data fra værter der er aktive
@@ -118,4 +123,8 @@ async function fetchEventsFromHosts() {
     throw new Error("Kunne ikke hente data fra værter");
   }
 }
-module.exports = { fetchEventsFromHosts };
+
+
+module.exports = { 
+  fetchEventsFromHosts  
+};

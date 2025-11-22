@@ -1,18 +1,274 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <link rel="stylesheet" href="forside.css">
+  <link rel="stylesheet" href="/oplevelse.css">
   <meta charset="UTF-8" />
-  <title>Forsiden</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rediger oplevelse</title>
 </head>
+
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-top">
-        <div class="logo-box">Understory</div>
+  <div class="page">
+    <!-- Tilbage knap: Sender brugeren tilbage til forsiden med alle events -->
+    <header class="top-bar">
+      <a class="back-link" href="/">
+        <span class="back-arrow">←</span>
+        <span>Tilbage</span>
+      </a>
+    </header>
+
+    <!-- Indhold -->
+    <main class="main-wrapper">
+      <section class="card">
+        <!-- Titel -->
+        <input
+          type="text"
+          class="title-input"
+          placeholder="Tilføj navn på event"
+        />
+
+        <!-- Liste over event attributter  -->
+        <div class="section-list">
+
+          <!-- Info om Lokation -->
+          <div class="section-row">
+            <div class="section-left">
+              <span class="section-label">Lokation</span>
+              <span class="section-sub" id="lokation">
+                Angiv hvor eventet sker
+              </span>
+            </div>
+          </div>
+
+          <!-- Info om Eventkapacitet -->
+          <div class="section-row">
+            <div class="section-left">
+              <span class="section-label">Eventkapacitet</span>
+              <span class="section-sub" id="kapacitet">
+                Angiv maks. kapacitet pr. event.
+              </span>
+            </div>
+          </div>
+
+          <!-- Info om prisen på eventet -->
+          <div class="section-row">
+            <div class="section-left">
+              <span class="section-label">Billetter &amp; pris</span>
+              <span class="section-sub" id="pris">
+                Angiv prisen på event
+              </span>
+            </div>
+          </div>
+
+          <!-- Info om data, tidspunkt og varighed på eventet -->
+          <div class="section-row">
+            <div class="section-left">
+              <span class="section-label">Dato, tidspunkt og varighed på event</span>
+              <span class="section-sub" id="tidspunkt">
+                Angiv data, tidspunkt og varighed på event
+              </span>
+            </div>
+          </div>
+
+        <!-- Flere muligheder -->
+        <h2 class="more-title">Flere muligheder</h2>
+        <div class="more-grid">
+          <div class="more-card">
+            <div class="more-title-small">Beskrivelse</div>
+            <div class="more-text" id="beskrivelse">Beskriv oplevelsen.</div>
+          </div>
+          <div class="more-card">
+            <div class="more-title-small">Kategori på event</div>
+            <div class="more-text" id="kategori">Hvilken kategori er eventet indenfor?</div>
+          </div>
         </div>
-      </div>
-    </aside>
+
+        <!-- Samarbejde on/off switch -->
+        <h2 class="samarbejde-titel">Samarbejde</h2>
+        <div class="samarbejde-text">Vil du have at dette event har mulighed for, at lave et samarbejde med andre events?</div>
+        <div class="samarbejde-wrapper">
+          <button class="switch" id="samarbejdeSwitch">
+            <div class="switch-text" id="switchText">ON/OFF</div>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /*Find givent eventId der er klikket på ud fra sidens URL navn*/
+    const params = new URLSearchParams(window.location.search);
+    const clickedEventId = params.get("event");
+
+    console.log("********ClickedEvent.ID*********")
+    console.log(clickedEventId);
+
+    /*Funktion til at indsætte givent event info i bokse på siden(kører når siden loader)*/
+    async function inputEventInfo(){
+      /*Kalder til "proxyService.js" for at få mockdata om hosts og events*/
+      const response = await fetch('/services/hostsWithEvents');
+      const hostOgEventDataClient = await response.json();
+
+      console.log("*******Host og event data samlet******")
+      console.log(hostOgEventDataClient);
+
+      /*********************EVENT TITEL***************/
+      /*Finder event titel, ud fra hvilket event der er klikket på*/
+      const eventTitelPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.titel
+
+      console.log("***********Event titel**********")
+      console.log(eventTitelPåEventClicked);
+      
+      /*Indsætter titlen på eventet*/
+      document.querySelector(".title-input").placeholder = eventTitelPåEventClicked;
+ 
+
+      /*********************LOKATION***************/
+      /*Finder event lokation, ud fra hvilket event der er klikket på*/
+      const eventLokationPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.lokation
+
+      console.log("***********Event lokation**********")
+      console.log(eventLokationPåEventClicked);
+      
+      /*Indsætter info om event lokation*/
+      const lokationsTekst = document.getElementById('lokation');
+      lokationsTekst.innerHTML = '<span>' + eventLokationPåEventClicked +'</span>';
+
+      /*********************EVENTKAPACITET***************/
+      /*Finder event kapacitet, ud fra hvilket event der er klikket på*/
+      const eventKapacitetPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.eventkapacitet
+
+      console.log("***********Event kapacitet**********")
+      console.log(eventKapacitetPåEventClicked);
+      
+      /*Indsætter info om event kapacitet*/
+      const kapacitetsTekst = document.getElementById('kapacitet');
+      kapacitetsTekst.innerHTML = '<span>' + eventKapacitetPåEventClicked +'</span>';
+      
+
+      /*********************EVENTPRIS***************/
+      /*Finder event pris, ud fra hvilket event der er klikket på*/
+      const eventPrisPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.pris
+
+      console.log("***********Event Pris**********")
+      console.log(eventPrisPåEventClicked);
+      
+      /*Indsætter info om event pris*/
+      const prisTekst = document.getElementById('pris');
+      prisTekst.innerHTML = '<span>' + eventPrisPåEventClicked +' DKK</span>';
+
+
+      /*********************EVENT DATO, TIDSPUNKT OG VARIGHED***************/
+      /*Finder event data, ud fra hvilket event der er klikket på*/
+      const eventDatoPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.dato
+      /*Finder event tidspunkt, ud fra hvilket event der er klikket på*/
+      const eventTidspunktPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.tidspunkt
+      /*Finder event varighed, ud fra hvilket event der er klikket på*/
+      const eventVarighedPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.varighed
+      
+      
+      console.log("***********Event Dato**********")
+      console.log(eventDatoPåEventClicked);
+      console.log("***********Event Tidspunkt**********")
+      console.log(eventTidspunktPåEventClicked);
+      console.log("***********Event Varighed**********")
+      console.log(eventVarighedPåEventClicked);
+      
+
+      /*Indsætter info om event dato, tidspunkt og varighed*/
+      const datoTekst = document.getElementById('tidspunkt');
+      datoTekst.innerHTML = '<span> Dato = ' + eventDatoPåEventClicked + ' , Tidspunkt = ' + eventTidspunktPåEventClicked + ' , Varighed = ' + eventVarighedPåEventClicked + '</span>';
+
+
+      /*********************EVENTBESKRIVELSE***************/
+      /*Finder event beskrivelse, ud fra hvilket event der er klikket på*/
+      const eventBeskrivelsePåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.beskrivelse
+
+      console.log("***********Event Beskrivelse**********")
+      console.log(eventBeskrivelsePåEventClicked);
+      
+      /*Indsætter info om event beskrivelse*/
+      const beskrivelsesTekst = document.getElementById('beskrivelse');
+      beskrivelsesTekst.innerHTML = '<div>' + eventBeskrivelsePåEventClicked +'</div>';
+
+      /*********************EVENTKATEGORI***************/
+      /*Finder event kategori, ud fra hvilket event der er klikket på*/
+      const eventKategoriPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.kategori
+
+      console.log("***********Event Kategori**********")
+      console.log(eventKategoriPåEventClicked);
+      
+      /*Indsætter info om event kategori*/
+      const kategoriTekst = document.getElementById('kategori');
+      kategoriTekst.innerHTML = '<div>' + eventKategoriPåEventClicked +'</div>';
+
+
+      /*********************SAMARBJEDSSWITCH***************/
+      const toggleBtn = document.getElementById('samarbejdeSwitch');
+      const toggleText = document.getElementById('switchText');
+      const eventSamarbejdeStatusPåEventClicked = hostOgEventDataClient.data[clickedEventId-1].events.samarbejde
+
+      console.log("*********Event Samarbejde status**********");
+      console.log(eventSamarbejdeStatusPåEventClicked);
+
+      if (eventSamarbejdeStatusPåEventClicked == true) {
+        // Event vil gerne finde samarbejde, knappen er altså on
+        toggleBtn.classList.add("on");
+        toggleText.innerHTML = '<div>Ja tak!</div>';
+      } else {
+        // Event vil ikke finde samarbejde, knappen er altså off
+        toggleBtn.classList.remove("on");
+        toggleText.innerHTML = '<div>Nej tak</div>';
+      }
+      
+    
+    }
+    inputEventInfo();
+
+
+
+
+
+
+    /*
+    const knap = document.getElementById("vælgevent");
+    
+    knap.addEventListener("click", async function() {
+      const response = await fetch('/services/hostsWithEvents');
+      const hostDataClient = await response.json();
+
+      const hostNavnafHostClicked = hostDataClient.data[clickedEventId-1].navn
+      
+      const title = document.getElementById('lokation');
+      title.innerHTML = '<span>' + hostNavnafHostClicked +'</span>';
+      
+      //console.log(hostDataClient.data);
+      //console.log("*****Host Navn*****")
+      //console.log(hostNavnafHostNr0);
+
+      console.log("*********Liste af events******")
+      for (let i = 0; i < hostDataClient.data.length; i++) {
+          const hostWithEvent = hostDataClient.data[i];
+          
+          console.log(hostWithEvent.events.samarbejde);
+      }
+    });
+
+          const hostNavnafHostClicked = hostDataClient.data[clickedEventId-1].events.lokation
+
+      console.log("***********Event infomation**********")
+      console.log(hostNavnafHostClicked);
+      
+      Indsætter info om event lokation
+      const title = document.getElementById('lokation');
+      title.innerHTML = '<span>' + hostNavnafHostClicked +'</span>';
+
+    */
+
+
+
+
+
+
+  </script>
 </body>
+</html>

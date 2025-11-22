@@ -3,8 +3,12 @@ const proxyService = require('../services/proxyService');
 // GET events fra alle værter via proxy
 async function getEvents(req, res) {
   try {
-    const results = await proxyService.fetchEventsFromHosts(); // Henter data fra alle værter via proxy 
-   // sender data til klienten
+    const results = await proxyService.fetchEventsFromHosts(); 
+   //Sender data til klienten
+   console.log("******Results******")
+   console.log(results);
+
+
     res.json({
       success: true,
       data: results,
