@@ -4,6 +4,9 @@
  * Module dependencies.
  */
 
+// Indlæs environment variables fra .env fil 
+require('dotenv').config();
+
 var app = require('../app');
 var debug = require('debug')('gruppeprojekt:server');
 var http = require('http');

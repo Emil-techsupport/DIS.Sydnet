@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kollab - Sydnet</title>
+    <link rel="stylesheet" href="/forside.css">
+    <link rel="stylesheet" href="/stylesheets/besked.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+              <div class="logo-box">Understory</div>
+      
+              <nav>
+                <div class="nav-section">
+                    <span><a href="/" style="text-decoration: none; color: inherit;">Hjem</a></span>
+                  <div class="nav-item">
+                    <span>Kalender</span>
+                  </div>
+                  <div class="nav-item">
+                    <span><a href="/oplevelser" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
+                 </div>
+                 <div class="nav-item">
+                    <span><a href="/search" style="text-decoration: none; color: inherit;">Søg</a></span>
+                 </div>
+                </div>
+      
+                <div class="nav-item-group-title">Storefront</div>
+                <div class="nav-section">
+                  <div class="nav-item">
+                    <span>Storefront</span>
+                  </div>
+                  <div class="nav-item">
+                    <span>Grow</span>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </aside>
+      
+        <!-- Main Content -->
+        <main class="main">
+            <div class="main-header">
+                <h1 class="title">Kollab om oplevelse</h1>
+            </div>
+
+            <div class="main-content">
+                <!-- Event Information -->
+                <div id="event-info" class="experience-card">
+                    <!-- Event info vil blive indsat her -->
+                </div>
+
+                <!-- Message Form -->
+                <div class="message-section">
+                    <h3>Send besked til værten</h3>
+                    <form id="message-form" class="message-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sender-name">Dit navn</label>
+                                <input type="text" id="sender-name" name="senderName" required 
+                                       placeholder="Indtast dit navn">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="sender-phone">Dit telefonnummer</label>
+                                <input type="tel" id="sender-phone" name="senderPhone" required 
+                                       placeholder="12 34 56 78">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message-text">Besked til værten</label>
+                            <textarea id="message-text" name="messageText" required 
+                                      placeholder="Hej! Jeg vil gerne samarbejde om denne oplevelse. Jeg har erfaring med..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="cta-button">Send besked</button>
+                    </form>
+                </div>
+
+                <!-- Success/Error Messages -->
+                <div id="message-status" class="message-status" style="display: none;">
+                    <!-- Status beskeder vises her -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Globale variabler
+        let currentEventData = null;
+
+        // Hent event-data fra URL, vi henter det data vi genere fra search og laver det til json så vi kan arbejde med det 
+        function hentEventDataFraURL() {
+            // Hent URL parametre
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventDataString = urlParams.get('event');
+            
+            if (eventDataString) {
+                try {
+                    // Konverter URL-data tilbage til objekt
+                    const eventData = JSON.parse(decodeURIComponent(eventDataString));
+                    return eventData; // event information
+                } catch (error) {
+                    console.error('Fejl ved parsing af event-data:', error);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        // Vis event information
+        function visEventInfo(eventData) {
+            const container = document.getElementById('event-info');
+            
+            if (!eventData) {
+                container.innerHTML = '<p>Ingen event-data fundet.</p>';
+                return;
+            }
+
+            // Gem event-data globalt
+            currentEventData = eventData;
+            
+            // Byg HTML-indhold til event-kortet
+            
+            // Først lav vi titel og vært-info
+            const titel = eventData.data?.title || `${eventData.kategori} hos ${eventData.source}`;
+            const værtInfo = `Vært: ${eventData.source} • ${eventData.lokation}`;
+            
+            // Lav beskrivelse hvis den findes
+            let beskrivelse = '';
+            if (eventData.data?.beskrivelse) {
+                beskrivelse = `<p class="experience-description">${eventData.data.beskrivelse}</p>`;
+            }
+            
+            // Lav detaljer - kun vis dem der findes
+            let detaljer = '';
+            
+            if (eventData.data?.dato) {
+                detaljer += `
+                    <div class="detail-item">
+                        <strong>Dato</strong>
+                        <span>${eventData.data.dato}</span>
+                    </div>`;
+            }
+            
+            if (eventData.data?.tid) {
+                detaljer += `
+                    <div class="detail-item">
+                        <strong>Tid</strong>
+                        <span>${eventData.data.tid}</span>
+                    </div>`;
+            }
+            
+            if (eventData.data?.varighed) {
+                detaljer += `
+                    <div class="detail-item">
+                        <strong>Varighed</strong>
+                        <span>${eventData.data.varighed}</span>
+                    </div>`;
+            }
+            
+            if (eventData.data?.pris) {
+                detaljer += `
+                    <div class="detail-item">
+                        <strong>Pris</strong>
+                        <span>${eventData.data.pris} kr.</span>
+                    </div>`;
+            }
+            
+            // Kategori vises altid
+            detaljer += `
+                <div class="detail-item">
+                    <strong>Kategori</strong>
+                    <span>${eventData.kategori}</span>
+                </div>`;
+            
+            // Sæt alt sammen til færdigt HTML
+            const eventHTML = `
+                <div class="experience-header">
+                    <h3 class="experience-title">${titel}</h3>
+                    <div class="experience-host">${værtInfo}</div>
+                </div>
+                
+                ${beskrivelse}
+                
+                <div class="experience-details">
+                    ${detaljer}
+                </div>
+            `;
+            
+            container.innerHTML = eventHTML;
+        }
+
+        // Håndter besked-formular
+        function haandterBeskedFormular() {
+            const form = document.getElementById('message-form');
+        // Vært A udfylder formular med besked til vært B 
+            form.addEventListener('submit', async function(e) {
+                // Stop normal form submission
+                e.preventDefault(); // stopper normal form submission
+                
+                // Hent form-data
+                const senderName = document.getElementById('sender-name').value.trim(); // sender navn
+                const senderPhone = document.getElementById('sender-phone').value.trim(); // sender telefonnummer
+                const messageText = document.getElementById('message-text').value.trim(); // sender besked
+                
+                // Valider data så man kun kan sende besked hvis alle felter er udfyldt
+                if (!senderName || !senderPhone || !messageText) {
+                    visBesked('Udfyld venligst alle felter.', 'error');
+                    return;
+                }
+                // Tjek om der er event-data så man kun kan sende besked hvis der er event-data
+                if (!currentEventData) {
+                    visBesked('Ingen event-data fundet.', 'error');
+                    return;
+                }
+                
+                // Forbered besked-data, dette er skabelon for at sende beskeden til vært B
+                const beskedData = {
+                    senderName: senderName,
+                    senderPhone: senderPhone,
+                    messageText: messageText,
+                    // Event-info er skabelon for at sende beskeden til vært B
+                    eventInfo: {
+                        title: currentEventData.data?.title || `${currentEventData.kategori} hos ${currentEventData.source}`,
+                        host: currentEventData.source,
+                        location: currentEventData.lokation,
+                        category: currentEventData.kategori
+                    },
+                    timestamp: new Date().toISOString()
+                };
+                
+                try {
+                    // Simuler afsendelse (i virkeligheden ville dette gå til en server)
+                    await sendBesked(beskedData);
+                    
+                    // Vis success besked
+                    visBesked(`Besked sendt til ${currentEventData.source}! De vil kontakte dig på ${senderPhone}.`, 'success');
+                    
+                    // Nulstil formular, ellers virker det ikke med at sende beskeden igen
+                    form.reset();
+                    
+                } catch (error) {
+                    console.error('Fejl ved afsendelse af besked:', error);
+                    visBesked('Der opstod en fejl. Prøv igen senere.', 'error');
+                }
+            });
+        }
+
+        // Send besked via Twilio SMS - frontend side sender beskeden til server side som håndterer Twilio (twilio.js)
+        async function sendBesked(beskedData) {
+            try {
+                // Send besked til server som håndterer Twilio (twilio.js)
+                const response = await fetch('/api/kollab/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(beskedData)
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'SMS kunne ikke sendes');
+                }
+                
+                console.log('SMS sendt via Twilio:', result); // dette er kun til debugging ofc :))
+                return result;
+                
+            } catch (error) {
+                console.error('Fejl ved SMS-afsendelse:', error);
+                throw error;
+            }
+        }
+
+        // Vis status-besked altså når beskeden er sendt viser vi en besked til brugeren om at beskeden er sendt
+        function visBesked(tekst, type) {
+            // Hent status-container så vi kan sætte teksten og CSS-klassen på den
+            const statusContainer = document.getElementById('message-status');
+            
+            // Sæt CSS-klasse så det ser nice 
+            // type er success eller error så vi kan sætte CSS-klassen på den
+            statusContainer.className = `message-status ${type}`;
+            statusContainer.textContent = tekst;
+            // Vis beskeden 
+            statusContainer.style.display = 'block';
+            
+            // Skjul besked efter 5 sekunder så den ikke står der for evigt :(
+            setTimeout(() => {
+                statusContainer.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialiser siden når DOM er klar
+        function initialiserSide() {
+            // Hent og vis event-data vi henter det data vi genere fra search og laver det til json så vi kan arbejde med det 
+            const eventData = hentEventDataFraURL();
+            visEventInfo(eventData);
+            
+            // Sæt event-listeners op
+            haandterBeskedFormular();
+        }
+
+        // Start når siden er loadet
+        window.addEventListener('DOMContentLoaded', initialiserSide);
+    </script>
+
+    
+</body>
+</html>
