@@ -71,15 +71,19 @@
       
       try {
         // Hent data fra API
-        const response = await fetch('/services/events');
-        const result = await response.json();
+        const response = await fetch('/services/hostsWithEvents');
+        const hostDataClient = await response.json();
+        console.log("************HostDataClient********");
+        console.log(hostDataClient);
+        //console.log("************HostDataClient.events********");
+        //console.log(hostDataClient.data);
         
-        
-        if (result.success && result.data) {
+        if (hostDataClient.success && hostDataClient.data) {
           // Vis alle events fra alle værter
-          displayEvents(result.data);
+          displayEvents(hostDataClient.data);
+        
         } else {
-          container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Kunne ikke hente oplevelser: ' + (result.error || 'Ukendt fejl') + '</div>';
+          container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Kunne ikke hente oplevelser: ' + (hostDataClient.error || 'Ukendt fejl') + '</div>';
         }
       } catch (error) {
         if (loadingMessage) loadingMessage.remove();
@@ -87,11 +91,13 @@
       }
     }
 
-    // Vis events i UI 
-    function displayEvents(events) {
+    // Vis events i UI - bruger samme experience-card struktur
+    function displayEvents(hosts) {
+      //console.log("*******Hosts********");
+      //console.log(hosts);
       const container = document.getElementById('events-container');
       
-        if (!events || events.length === 0) {
+        if (!hosts || hosts.length === 0) {
         container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">Ingen oplevelser fundet</div>';
         return;
       }
@@ -99,21 +105,25 @@
       // Tøm container først
       container.innerHTML = '';
 
-      // Loop gennem alle events
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
+      // Loop gennem alle hosts
+      for (let i = 0; i < hosts.length; i++) {
+        const host = hosts[i];
+        //console.log("*******Host********");
+        //console.log(host);
         
         // Hent event data direkte
-        const eventData = event.data;
+        const eventData = host.events;
+        console.log("*******Host.event********");
+        console.log(eventData);
         
         // Start med standard værdier
-        let title = 'Ingen titel angivet';
+        let titel = 'Ingen titel angivet';
         let subtitle = 'Standardoplevelse';
         
         // Hvis vi har event data med en titel, brug den
-        if (eventData && eventData.title) {
+        if (eventData && eventData.titel) {
           // Sæt titlen til event data titlen
-          title = eventData.title;
+          titel = eventData.titel;
           
           // Byg beskrivelsen op stykke for stykke
           let beskrivelseTekst = '';
@@ -130,42 +140,52 @@
             }
             beskrivelseTekst += `${eventData.dato} kl. ${eventData.tid}`;
           }
-          
         
           // Brug den byggede beskrivelse, eller standard hvis den er tom
           subtitle = beskrivelseTekst || 'Standardoplevelse';
           
         } else {
           // Hvis vi ikke har event data, brug vært information i stedet
-          title = `${event.kategori || 'Oplevelse'} hos ${event.source}`;
-          subtitle = `Lokation: ${event.lokation}`;
+          titel = `${host.kategori || 'Oplevelse'} hos ${host.source}`;
+          subtitle = `Lokation: ${host.lokation}`;
         }
         
         // Opret experience-card -
         const card = document.createElement('section');
         card.className = 'experience-card';
+        card.dataset.id = host.id;
         card.style.cursor = "pointer";
         
         // Generer HTML 
         card.innerHTML = `
         <div class="experience-image">
-          <div class="draft-badge">${event.kategori || 'Oplevelse'}</div>
+          <div class="draft-badge">${host.kategori || 'Oplevelse'}</div>
         </div>
         <div class="experience-content">
-          <div class="experience-title">${title}</div>
+          <div class="experience-title">${titel}</div>
           <div class="experience-subtitle">${subtitle}</div>
         </div>
       `;
+      
+      //console.log("*******check data Inden vi opretter eventlistner********");
+      //console.log(eventData);
+      //console.log(eventData.id);
 
       card.addEventListener("click", () => {
-        window.location.href = "/oplevelser";
+        //window.location.href = ("/oplevelser");
+
+        console.log("*******Check event.id inden den bliver sendt videre til oplevelser.html********");
+        console.log(eventData.id);
+
+        let clickedEvent = eventData.id;
+        window.location.href = `/oplevelser?event=${clickedEvent}`;
       });  
 
         container.appendChild(card);
       }
     }
 
-  // Hent events når siden loader
+  // Hent hosts når siden loader
   loadEvents();
 
   </script>

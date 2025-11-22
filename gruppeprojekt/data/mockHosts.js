@@ -22,7 +22,7 @@ const hosts = [
     kategori: "Food & Tastings",
     apiUrl: "https://jsonplaceholder.typicode.com/users", // Mock API endpoint
     oprettetDato: "2024-02-20",
-    status: "active"
+    status: "inactive"
   },
   {
     værtID: 3,
@@ -33,7 +33,7 @@ const hosts = [
     kategori: "Health & Yoga",
     apiUrl: "https://jsonplaceholder.typicode.com/comments", // Mock API endpoint
     oprettetDato: "2024-03-10",
-    status: "active"
+    status: "inactive"
   },
   {
     værtID: 4,
