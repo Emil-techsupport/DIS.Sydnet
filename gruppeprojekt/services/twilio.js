@@ -4,7 +4,10 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-// Opret Twilio klient her bliver Twilio klient oprettet med accountSid og authToken fra .env filen så det der sætter forbindelsen til Twilio det er sådan vi får adgang til twilio API 
+if (!accountSid || !authToken || !twilioPhoneNumber) {
+    console.error('Twilio credentials mangler i .env fil');
+}
+
 const client = twilio(accountSid, authToken);
 
 // Værters telefonnumre 
@@ -38,7 +41,7 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
 
 - Understory`.trim();
     
-    await client.messages.create({
+    const message = await client.messages.create({
         body: smsBesked,
         from: twilioPhoneNumber,
         to: værtTlf
@@ -58,7 +61,11 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
         to: beskedData.senderPhone
     });
     
-    return { success: true };
+    return { 
+        success: true,
+        messageSid: message.sid,
+        værtTelefon: værtTlf
+    };
 }
 
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
