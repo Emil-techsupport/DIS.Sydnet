@@ -5,7 +5,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-// Opret Twilio klient
+// Opret Twilio klient her bliver Twilio klient oprettet med accountSid og authToken fra .env filen så det der sætter forbindelsen til Twilio det er sådan vi får adgang til twilio API 
 const client = twilio(accountSid, authToken);
 
 // Værters telefonnumre lige nu er det meda nr man i kan putte jeres nr ind for at teste det 
