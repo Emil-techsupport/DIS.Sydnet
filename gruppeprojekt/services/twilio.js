@@ -55,9 +55,16 @@ async function sendSMSTilVært(beskedData) {
         throw new Error(`Vært '${beskedData.eventInfo.host}' ikke fundet`);
     }
     
-    // Gem tracking
-    aktiveBeskeder[værtTlf] = beskedData.senderPhone;
-    console.log('Tracking gemt:', { værtTlf, senderPhone: beskedData.senderPhone });
+    // Gem tracking - normaliser telefonnumre
+    const normaliseretVærtTlf = værtTlf.replace(/\s/g, '').replace(/^00/, '+');
+    const normaliseretSenderPhone = beskedData.senderPhone.replace(/\s/g, '').replace(/^00/, '+');
+    
+    aktiveBeskeder[normaliseretVærtTlf] = normaliseretSenderPhone;
+    console.log('Tracking gemt:', { 
+        værtTlf: normaliseretVærtTlf, 
+        senderPhone: normaliseretSenderPhone,
+        alleNøgler: Object.keys(aktiveBeskeder)
+    });
     
     // Send SMS til vært
     const smsBesked = `Ny kollab-anmodning!
@@ -118,20 +125,38 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 }
 
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
+    console.log('håndterIndkommendeSMS kaldt med:', { fraNummer, tilNummer, beskedTekst });
+    console.log('aktiveBeskeder:', aktiveBeskeder);
+    
     if (!client) {
+        console.error('Twilio client er ikke oprettet');
         return;
     }
     
-    // Find afsender telefon
-    const afsenderTelefon = aktiveBeskeder[fraNummer];
+    // Normaliser telefonnummer (fjern mellemrum og sikre + format)
+    const normaliseretFraNummer = fraNummer.replace(/\s/g, '').replace(/^00/, '+');
+    console.log('Normaliseret fraNummer:', normaliseretFraNummer);
+    
+    // Find afsender telefon - prøv både original og normaliseret
+    const afsenderTelefon = aktiveBeskeder[fraNummer] || aktiveBeskeder[normaliseretFraNummer];
+    console.log('afsenderTelefon fundet:', afsenderTelefon);
     
     if (afsenderTelefon) {
-        // Videresend til afsender
-        await client.messages.create({
-            body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
-            from: twilioPhoneNumber,
-            to: afsenderTelefon
-        });
+        console.log('Forsøger at videresende besked til:', afsenderTelefon);
+        try {
+            await client.messages.create({
+                body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
+                from: twilioPhoneNumber,
+                to: afsenderTelefon
+            });
+            console.log('Besked videresendt succesfuldt til:', afsenderTelefon);
+        } catch (error) {
+            console.error('Fejl ved videresendelse af besked:', error.message);
+            throw error;
+        }
+    } else {
+        console.error('Ingen afsender telefon fundet for:', fraNummer);
+        console.error('Tilgængelige nøgler i aktiveBeskeder:', Object.keys(aktiveBeskeder));
     }
 }
 
