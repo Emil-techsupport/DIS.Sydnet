@@ -55,13 +55,19 @@ async function sendSMSTilVært(beskedData) {
         throw new Error(`Vært '${beskedData.eventInfo.host}' ikke fundet`);
     }
     
-    // Gem tracking - normaliser telefonnumre
+    // Gem tracking - normaliser telefonnumre og gem i flere formater
     const normaliseretVærtTlf = værtTlf.replace(/\s/g, '').replace(/^00/, '+');
     const normaliseretSenderPhone = beskedData.senderPhone.replace(/\s/g, '').replace(/^00/, '+');
+    const rensetVærtTlf = normaliseretVærtTlf.replace(/[^\d+]/g, '');
     
+    // Gem i flere formater for at være sikker på at finde det igen
     aktiveBeskeder[normaliseretVærtTlf] = normaliseretSenderPhone;
+    aktiveBeskeder[rensetVærtTlf] = normaliseretSenderPhone;
+    aktiveBeskeder[værtTlf] = normaliseretSenderPhone;
+    
     console.log('Tracking gemt:', { 
         værtTlf: normaliseretVærtTlf, 
+        rensetVærtTlf: rensetVærtTlf,
         senderPhone: normaliseretSenderPhone,
         alleNøgler: Object.keys(aktiveBeskeder)
     });
@@ -135,10 +141,16 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     
     // Normaliser telefonnummer (fjern mellemrum og sikre + format)
     const normaliseretFraNummer = fraNummer.replace(/\s/g, '').replace(/^00/, '+');
+    // Fjern også eventuelle bindestreger eller andre tegn
+    const rensetFraNummer = normaliseretFraNummer.replace(/[^\d+]/g, '');
     console.log('Normaliseret fraNummer:', normaliseretFraNummer);
+    console.log('Renset fraNummer:', rensetFraNummer);
     
-    // Find afsender telefon - prøv både original og normaliseret
-    const afsenderTelefon = aktiveBeskeder[fraNummer] || aktiveBeskeder[normaliseretFraNummer];
+    // Find afsender telefon - prøv alle mulige formater
+    const afsenderTelefon = aktiveBeskeder[fraNummer] 
+        || aktiveBeskeder[normaliseretFraNummer] 
+        || aktiveBeskeder[rensetFraNummer]
+        || aktiveBeskeder[fraNummer.replace(/\s/g, '')];
     console.log('afsenderTelefon fundet:', afsenderTelefon);
     
     if (afsenderTelefon) {
