@@ -1,55 +1,66 @@
-//services/proxyService.js 
-// Proxy service der håndterer hentning af data fra flere eksterne værter (
-// Fungerer som mellemlag mellem klient og backend APIr
 
 // Importerer axios til at lave HTTP requests til eksterne API'er
 const axios = require("axios");
 
-// Importerer hosts array fra mock database 
+// Importerer funktion til at få fat i alle hosts fra "mockHosts"
 const {getAllHosts} = require('../data/mockHosts');
 
-// Importerer dansk mock events data
-//const {getRandomEvent} = require('../data/mockEvents');
-const {getEventsByHost2} = require('../data/mockEvents');
+//Importere vores funktion til at hente alle events fra en given host.
+const {getEventsByHostName} = require('../data/mockEvents');
 
-// Importerer caching service til at cachee responses
+//Gør det muligt at cache responses
 const cache = require('./caching');
 
-/**
-henter events fra en vært
- */
-async function proxyRequest(host) {
-      // Gemmer starttidspunkt for at måle Round Trip Time (RTT)
-      // RTT = hvor lang tid det tager at hente data fra API
+
+//Henter events fra alle hosts via proxy
+//Tilføjer cache og RTT målinger
+async function fetchEventsFromHost() {
+  try {
+    // Cache key til at identificere cached data
+    const cacheKey = 'vearter_data';
+    
+    // Tjek om data allerede er i cache
+    // Hvis cache findes og ikke er udløbet, returner cached data
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      //console.log("********Returner cached data"); 
+      return cachedData;
+    }
+  
+    // Hvis det ikke ligger i cashen, så hent data'en igen
+    console.log('Cache miss - fetching from APIs');
+
+     //Henter events ud fra host og tilføjer RTT
+    async function proxyRequest(host) {
+      // Gemmer starttidspunktet for senere at kunne måle round trip timen
       const start = Date.now();
+
+      //console.log("******Start tidspunkt(nu)******")
+      //console.log(start);
       
-      // Simulerer API request med dansk mock data
-      // henter mock vært data fra mockDB.js
+      //Er der behov for det her?:
       //await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
       
-      // Henter mock event data baseret på vært navn
-      const mockEvent = getEventsByHost2(host.navn);
-      //const mockEvent2 = getEventsByHost2(host.navn);
+      // Henter alle events baseret på host navn
+      const alleEvents = getEventsByHostName(host.navn);
+      
+      //console.log("********alleEvents*********");
+      //console.log(alleEvents);
 
-      console.log("********Mockevent*********");
-      console.log(mockEvent);
       // Beregner RTT ved at trække starttid fra nuværende tid
-      // Resultatet er i millisekunder (ms)
       const rtt = Date.now() - start;
       
-      // Logger RTT til konsollen for monitoring/debugging
-      // Viser hvilken vært og hvor hurtigt den svarede
+      // Logger RTT til konsollen. Skriver hostnavn og given round trip time
       console.log(`${host.navn} - RTT: ${rtt}ms`);
       
-      // Returnerer struktureret objekt med vært info + hentet data
-      // Dette objekt sendes videre til controller og derefter til klienten
+      // Returnerer objekt med info om host, samt alle events for den givne host, samt RTT for processen.
       return {
         navn: host.navn,       
         URL: host.apiUrl,           
         lokation: host.lokation,        
         ID: host.værtID,          
         rtt,                      
-        events: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
+        events: alleEvents || null   
       };
 }
 
@@ -70,6 +81,25 @@ async function fetchEventsFromHosts() {
       return cachedData;
     }
     
+    //Får fat i alle hosts
+    let hosts = getAllHosts();
+    
+    //Får fat i vores første host(Anna)
+    let annahost = hosts[0]
+
+    //console.log("******Få fat i host Anna******");
+    //console.log(annahost);
+    //console.log(annahost.navn);
+
+    //Gemmer svaret fra proxyRequest funktionen, med Anna som den givne host
+    hostOgEventInfo = proxyRequest(annahost);
+
+    //console.log("**********Det der kommer ud af proxyRequest************")
+    //console.log(hostOgEventInfo);
+    
+  
+    // Gem resultater i cachen i 60 sekunder
+    cache.set(cacheKey, hostOgEventInfo, 60000);
     // Hvis ikke i cache, hent data fra API'er
     console.log('Cache miss - fetching from APIs'); // Logger at data hentes
     
@@ -101,21 +131,21 @@ async function fetchEventsFromHosts() {
     cache.set(cacheKey, test, 60000);
     console.log('Data cached for 60 seconds'); // Logger at data er cached
     
-    // Returnerer array med alle resultater fra alle værter
-    // Hvert element i arrayet er et objekt med vært info + data (se proxyRequest return)
-    return test;
+    //Returnerer info om host, alle events for den givne host, samt RTT for processen. Og alt dette er gemt i cachen
+    return hostOgEventInfo;
     
   } catch (error) {
-    // Hvis noget går galt (fx API er nede, netværksfejl, osv.)
-    // Logger fejlen til konsollen for debugging
+    // Hvis noget går galt logger vi fejlen
     console.error("Fejl i proxyService:", error);
     
-    // Kaster en ny fejl videre til controller
-    // Controller kan så håndtere fejlen og sende passende HTTP response til klienten
+    //Kaster en ny fejl som sender HTTP response til klienten
     throw new Error("Kunne ikke hente data fra værter");
   }
 }
 
+//Gør at vi kan bruge "fetchEventsFromHost" funktionen i andre filer
+module.exports = { 
+  fetchEventsFromHost 
 
 /**
  * Henter events for en specifik vært ( kan bruges til alle hosts)
