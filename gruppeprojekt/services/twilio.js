@@ -8,9 +8,16 @@ let client = null;
 if (accountSid && authToken && twilioPhoneNumber) {
     try {
         client = twilio(accountSid, authToken);
+        console.log('Twilio klient oprettet succesfuldt');
     } catch (error) {
         console.error('Fejl ved oprettelse af Twilio klient:', error.message);
     }
+} else {
+    console.error('Twilio credentials mangler:', {
+        hasAccountSid: !!accountSid,
+        hasAuthToken: !!authToken,
+        hasPhoneNumber: !!twilioPhoneNumber
+    });
 }
 
 // Værters telefonnumre 
@@ -24,7 +31,19 @@ const aktiveBeskeder = {};
 
 // Send SMS til vært og bekræftelse til afsender her bliver SMS beskeden bygget til vært B
 async function sendSMSTilVært(beskedData) {
+    console.log('sendSMSTilVært kaldt med:', {
+        host: beskedData.eventInfo?.host,
+        senderName: beskedData.senderName,
+        senderPhone: beskedData.senderPhone
+    });
+    
     if (!client || !accountSid || !authToken || !twilioPhoneNumber) {
+        console.error('Twilio check fejlede:', {
+            hasClient: !!client,
+            hasAccountSid: !!accountSid,
+            hasAuthToken: !!authToken,
+            hasPhoneNumber: !!twilioPhoneNumber
+        });
         throw new Error('Twilio credentials mangler i .env fil');
     }
     
@@ -51,11 +70,16 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
 
 - Understory`.trim();
     
-    const message = await client.messages.create({
-        body: smsBesked,
-        from: twilioPhoneNumber,
-        to: værtTlf
-    });
+    let message;
+    try {
+        message = await client.messages.create({
+            body: smsBesked,
+            from: twilioPhoneNumber,
+            to: værtTlf
+        });
+    } catch (error) {
+        throw new Error(`Twilio fejl ved afsendelse til vært: ${error.message}`);
+    }
     
     // Send bekræftelse til afsender
     const bekræftelsesBesked = `Din kollab-anmodning er sendt!
@@ -65,11 +89,15 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 
 - Understory`;
     
-    await client.messages.create({
-        body: bekræftelsesBesked,
-        from: twilioPhoneNumber,
-        to: beskedData.senderPhone
-    });
+    try {
+        await client.messages.create({
+            body: bekræftelsesBesked,
+            from: twilioPhoneNumber,
+            to: beskedData.senderPhone
+        });
+    } catch (error) {
+        throw new Error(`Twilio fejl ved bekræftelse til afsender: ${error.message}`);
+    }
     
     return { 
         success: true,
