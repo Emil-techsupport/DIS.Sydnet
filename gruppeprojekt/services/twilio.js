@@ -9,7 +9,7 @@ const client = twilio(accountSid, authToken);
 
 // Værters telefonnumre 
 const værtTelefonnumre = {
-    'Anna': '+4591977138',  // Medas nr 
+    'Anna': '+4528684727',  // Medas nr 
     'Tim': '+4521663931'    // Medas nr
 };
 

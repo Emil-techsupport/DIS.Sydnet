@@ -127,13 +127,12 @@
       loadEvents();
     });
     
-    // Hent events fra API når siden loader
+    // Kører når siden loader
     async function loadEvents() {
       const container = document.getElementById('events-container');
       const loadingMessage = document.getElementById('loading-message');
       
       try {
-        // Hent logget ind vært's events (fra cookie)
         // Først tjek om bruger er logget ind
         const authResponse = await fetch('/api/auth/me');
         const authResult = await authResponse.json();
@@ -149,10 +148,10 @@
 
         
         const hostDataClient = await response.json();
-        console.log("************HostDataClient********");
-        console.log(hostDataClient);
-        //console.log("************HostDataClient.events********");
-        //console.log(hostDataClient.data);
+
+        //console.log("************HostDataClient********");
+        //console.log(hostDataClient);
+
         
         if (hostDataClient.success && hostDataClient.data) {
           // Vis alle events fra alle værter
@@ -181,34 +180,23 @@
       // Tøm container først
       container.innerHTML = '';
 
-
-      console.log("******displayEvents Hosts*****");
-      console.log(hosts);
-
-      console.log("******displayEvents Events*****");
-      console.log(hosts.events[0]);
-
-      console.log("******displayEvents Event nummer 0*****");
-      console.log(hosts.events[0][0]);
-
+      //console.log("******displayEvents Event nummer 0*****");
+      //console.log(hosts.events[0][0]);
 
       let antalEvents = hosts.events[0].length
 
-      console.log("Antal events i tal");
-      console.log(antalEvents);
+      //console.log("Antal events i tal");
+      //console.log(antalEvents);
 
       // Loop gennem alle hosts
       for (let i = 0; i < antalEvents; i++) {
         const event = hosts.events[0][i];
-        console.log("*******Host********");
-        console.log(event);
         
         // Hent event data direkte
         const eventData = event
-        console.log("*******Host.event********");
-        console.log(eventData);
-
-        console.log(eventData.titel);
+        //console.log("*******Host.event********");
+        //console.log(eventData);
+        //console.log(eventData.titel);
         
         // Start med standard værdier
         let titel = 'Ingen titel angivet';
@@ -266,10 +254,8 @@
         //console.log(eventData.id);
 
         card.addEventListener("click", () => {
-          //window.location.href = ("/oplevelser");
-
-          console.log("*******Check event.id inden den bliver sendt videre til oplevelser.html********");
-          console.log(eventData.id);
+          //console.log("*******Check event.id inden den bliver sendt videre til oplevelser.html********");
+          //console.log(eventData.id);
 
           let clickedEvent = eventData.id;
           window.location.href = `/oplevelser?event=${clickedEvent}`;
