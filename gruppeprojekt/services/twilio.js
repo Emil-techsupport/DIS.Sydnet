@@ -9,6 +9,9 @@ if (accountSid && authToken && twilioPhoneNumber) {
     try {
         client = twilio(accountSid, authToken);
         console.log('Twilio klient oprettet succesfuldt');
+        console.log('Account SID:', accountSid.substring(0, 10) + '...'); // Vis kun første 10 tegn for sikkerhed
+        console.log('Auth Token:', authToken.substring(0, 10) + '...'); // Vis kun første 10 tegn for sikkerhed
+        console.log('Phone Number:', twilioPhoneNumber);
     } catch (error) {
         console.error('Fejl ved oprettelse af Twilio klient:', error.message);
     }
@@ -16,7 +19,9 @@ if (accountSid && authToken && twilioPhoneNumber) {
     console.error('Twilio credentials mangler:', {
         hasAccountSid: !!accountSid,
         hasAuthToken: !!authToken,
-        hasPhoneNumber: !!twilioPhoneNumber
+        hasPhoneNumber: !!twilioPhoneNumber,
+        accountSidLength: accountSid ? accountSid.length : 0,
+        authTokenLength: authToken ? authToken.length : 0
     });
 }
 

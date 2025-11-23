@@ -29,8 +29,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(logger('dev'));
+// Vigtigt: urlencoded skal være true for Twilio webhooks (de sender form-data)
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Static files skal komme FØR routeren, så CSS/JS filer bliver serveret korrekt
