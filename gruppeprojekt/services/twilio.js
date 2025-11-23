@@ -4,11 +4,10 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-if (!accountSid || !authToken || !twilioPhoneNumber) {
-    throw new Error('Twilio credentials mangler i .env fil');
+let client = null;
+if (accountSid && authToken) {
+    client = twilio(accountSid, authToken);
 }
-
-const client = twilio(accountSid, authToken);
 
 // Værters telefonnumre 
 const værtTelefonnumre = {
@@ -21,7 +20,7 @@ const aktiveBeskeder = {};
 
 // Send SMS til vært og bekræftelse til afsender her bliver SMS beskeden bygget til vært B
 async function sendSMSTilVært(beskedData) {
-    if (!accountSid || !authToken || !twilioPhoneNumber) {
+    if (!client || !accountSid || !authToken || !twilioPhoneNumber) {
         throw new Error('Twilio credentials mangler i .env fil');
     }
     
@@ -76,6 +75,10 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 }
 
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
+    if (!client) {
+        return;
+    }
+    
     // Find afsender telefon
     const afsenderTelefon = aktiveBeskeder[fraNummer];
     
