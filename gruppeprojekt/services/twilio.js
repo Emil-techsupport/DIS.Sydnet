@@ -22,7 +22,7 @@ if (accountSid && authToken && twilioPhoneNumber) {
 
 // Værters telefonnumre 
 const værtTelefonnumre = {
-    'Anna': '+454521663931',  // Medas nr 
+    'Anna': '+4521663931',  // Medas nr 
     'Tim': '+4591977138'    // Medas nr
 };
 
