@@ -10,6 +10,8 @@ const servicesRouter = require('./routes/proxyRoutes');
 const viewRouter = require('./routes/routerview');
 // importer routerne til kollab/SMS funktionalitet
 const kollabRouter = require('./routes/kollabRoutes');
+// importer routerne til login/logout
+const authRouter = require('./routes/authRoutes');
 
 const app = express();
 // LOADBALANCING MIDDLEWARE
@@ -41,5 +43,7 @@ app.use('/services', servicesRouter);
 app.use('/view',viewRouter);
 // API routes for kollab/SMS
 app.use('/api/kollab', kollabRouter);
+// API routes for login/logout
+app.use('/api/auth', authRouter);
 
 module.exports = app;

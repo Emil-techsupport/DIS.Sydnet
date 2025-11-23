@@ -16,13 +16,16 @@
         <nav>
           <div class="nav-section">
             <div class="nav-item">
-              <span>Hjem</span>
+              <span><a href="/forside" style="text-decoration: none; color: inherit;">Hjem</a></span>
             </div>
             <div class="nav-item">
               <span>Kalender</span>
             </div>
             <div class="nav-item active">
               <span>Oplevelser</span>
+            </div>
+            <div class="nav-item">
+              <span><a href="/search" style="text-decoration: none; color: inherit;">Søg</a></span>
             </div>
             <div class="nav-item">
               <span>Salg</span>
@@ -36,6 +39,16 @@
             </div>
             <div class="nav-item">
               <span>Grow</span>
+            </div>
+          </div>
+          
+          <div class="nav-item-group-title" style="margin-top: 32px;">Konto</div>
+          <div class="nav-section">
+            <div class="nav-item">
+              <span id="user-name">Indlæser...</span>
+            </div>
+            <div class="nav-item" style="cursor: pointer;" id="logout-btn">
+              <span>Log ud</span>
             </div>
           </div>
         </nav>
@@ -64,15 +77,75 @@
   </div>
 
   <script>
+    // Hent bruger info og vis i sidebar
+    async function loadUserInfo() {
+      try {
+        const response = await fetch('/api/auth/me');
+        const result = await response.json();
+        
+        if (result.success) {
+          console.log('✅ Bruger er logget ind:', result.host.navn);
+          const userNameElement = document.getElementById('user-name');
+          if (userNameElement) {
+            userNameElement.textContent = result.host.navn;
+          }
+        } else {
+          console.log('❌ Bruger er ikke logget ind - redirecter til login');
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.log('❌ Fejl ved tjek af login - redirecter til login');
+        window.location.href = '/';
+      }
+    }
+    
+    // Logout funktion
+    async function logout() {
+      try {
+        console.log('🔄 Logger ud...');
+        const response = await fetch('/api/auth/logout', {
+          method: 'POST'
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          console.log('✅ Logout succesfuldt! Cookies er slettet på serveren');
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Fejl ved logout:', error);
+      }
+    }
+    
+    // Event listener for logout knap og load events
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+      }
+      loadUserInfo();
+      loadEvents();
+    });
+    
     // Hent events fra API når siden loader
     async function loadEvents() {
       const container = document.getElementById('events-container');
       const loadingMessage = document.getElementById('loading-message');
       
       try {
-        // Hent Anna's events (når Anna er logget ind)
-        // Dynamisk endpoint - kan ændres til hvilken som helst vært
-        const response = await fetch('/services/hostEvents?host=Anna');
+        // Hent logget ind vært's events (fra cookie)
+        // Først tjek om bruger er logget ind
+        const authResponse = await fetch('/api/auth/me');
+        const authResult = await authResponse.json();
+        
+        if (!authResult.success) {
+          // Hvis ikke logget ind, redirect til login
+          window.location.href = '/';
+          return;
+        }
+        
+        const loggedInHost = authResult.host.navn;
+        const response = await fetch('/services/hostEvents?host=' + loggedInHost);
         const hostDataClient = await response.json();
         console.log("************HostDataClient********");
         console.log(hostDataClient);
@@ -203,9 +276,6 @@
         container.appendChild(card);
       }
     }
-
-  // Hent hosts når siden loader
-  loadEvents();
 
   </script>
 </body>

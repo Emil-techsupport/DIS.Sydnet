@@ -112,6 +112,52 @@
             return null;
         }
 
+        // Hent events fra API hvis der ikke er URL parametre
+        async function hentEventsFraAPI() {
+            try {
+                // Tjek om bruger er logget ind
+                const authResponse = await fetch('/api/auth/me');
+                const authResult = await authResponse.json();
+                
+                if (!authResult.success) {
+                    return null;
+                }
+                
+                // Find en anden vært end den logget ind (hvis Anna er logget ind, vis Tim's events)
+                const loggedInHost = authResult.host.navn;
+                const searchHost = loggedInHost === 'Anna' ? 'Tim' : 'Anna';
+                
+                const response = await fetch('/services/hostEvents?host=' + searchHost);
+                const result = await response.json();
+                
+                if (result && result.success && result.data) {
+                    const hostData = result.data;
+                    
+                    if (hostData.events && Array.isArray(hostData.events) && hostData.events.length > 0) {
+                        const firstEvent = hostData.events[0][0];
+                        
+                        return {
+                            source: hostData.navn,
+                            kategori: firstEvent.kategori || 'Ukendt',
+                            lokation: hostData.lokation,
+                            data: {
+                                title: firstEvent.titel,
+                                beskrivelse: firstEvent.beskrivelse,
+                                dato: firstEvent.dato,
+                                tid: firstEvent.tidspunkt,
+                                varighed: firstEvent.varighed,
+                                pris: firstEvent.pris
+                            }
+                        };
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error('Fejl ved hentning af events:', error);
+                return null;
+            }
+        }
+
         // Vis event information
         function visEventInfo(eventData) {
             const container = document.getElementById('event-info');
@@ -296,10 +342,39 @@
             }, 5000);
         }
 
+        // Tjek om bruger er logget ind
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const result = await response.json();
+                
+                if (!result.success) {
+                    window.location.href = '/';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                window.location.href = '/';
+                return false;
+            }
+        }
+
         // Initialiser siden når DOM er klar
-        function initialiserSide() {
-            // Hent og vis event-data vi henter det data vi genere fra search og laver det til json så vi kan arbejde med det 
-            const eventData = hentEventDataFraURL();
+        async function initialiserSide() {
+            // Tjek om bruger er logget ind først
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) {
+                return;
+            }
+            
+            // Hent og vis event-data
+            let eventData = hentEventDataFraURL();
+            
+            // Hvis der ikke er data fra URL, hent fra API
+            if (!eventData) {
+                eventData = await hentEventsFraAPI();
+            }
+            
             visEventInfo(eventData);
             
             // Sæt event-listeners op

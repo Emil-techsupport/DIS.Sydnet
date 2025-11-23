@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Understory</title>
+    <link rel="stylesheet" href="/login.css">
+    
+</head>
+<body>
+    <div class="app">
+        <main class="main">
+            <div class="login-container">
+                <h1 class="login-title">Log ind</h1>
+                <p class="login-subtitle">Log ind for at se dine oplevelser</p>
+                
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="mail@understory.dk">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Indtast password">
+                    </div>
+                    
+                    <button type="submit" class="login-button">Log ind</button>
+                </form>
+                
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Skjul tidligere beskeder
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    successMessage.textContent = `Velkommen ${result.host.navn}!`;
+                    successMessage.style.display = 'block';
+                    
+                    // Redirect til forsiden efter 1 sekund
+                    setTimeout(() => {
+                        window.location.href = '/forside';
+                    }, 1000);
+                } else {
+                    errorMessage.textContent = result.message || 'Forkert email eller password';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Der opstod en fejl. Prøv igen senere.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
+

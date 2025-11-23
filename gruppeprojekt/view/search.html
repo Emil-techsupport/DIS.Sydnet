@@ -16,13 +16,18 @@
 
         <nav>
           <div class="nav-section">
-              <span><a href="/" style="text-decoration: none; color: inherit;">Hjem</a></span>
+            <div class="nav-item">
+              <span><a href="/forside" style="text-decoration: none; color: inherit;">Hjem</a></span>
+            </div>
             <div class="nav-item">
               <span>Kalender</span>
             </div>
             <div class="nav-item">
               <span><a href="/oplevelser" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
-           </div>
+            </div>
+            <div class="nav-item active">
+              <span>Søg</span>
+            </div>
             <div class="nav-item">
               <span>Salg</span>
             </div>
@@ -35,6 +40,16 @@
             </div>
             <div class="nav-item">
               <span>Grow</span>
+            </div>
+          </div>
+          
+          <div class="nav-item-group-title" style="margin-top: 32px;">Konto</div>
+          <div class="nav-section">
+            <div class="nav-item">
+              <span id="user-name">Indlæser...</span>
+            </div>
+            <div class="nav-item" style="cursor: pointer;" id="logout-btn">
+              <span>Log ud</span>
             </div>
           </div>
         </nav>
@@ -96,8 +111,20 @@
     // Hent alle events når siden loader
     async function loadAllEvents() {
       try {
-        const hostNavn = 'Tim';
-        const response = await fetch('/services/hostEvents?host=' + hostNavn);
+        // Tjek om bruger er logget ind
+        const authResponse = await fetch('/api/auth/me');
+        const authResult = await authResponse.json();
+        
+        if (!authResult.success) {
+          window.location.href = '/login';
+          return;
+        }
+        
+        // Find en anden vært end den logget ind (hvis Anna er logget ind, vis Tim's events)
+        const loggedInHost = authResult.host.navn;
+        const searchHost = loggedInHost === 'Anna' ? 'Tim' : 'Anna';
+        
+        const response = await fetch('/services/hostEvents?host=' + searchHost);
         const result = await response.json();
         
         if (result.success && result.data) {
@@ -270,8 +297,50 @@
     // når brugeren vælger en lokation, søger vi efter events
     document.getElementById('location-filter').addEventListener('change', searchEvents);
     
+    // Hent bruger info
+    async function loadUserInfo() {
+      try {
+        const response = await fetch('/api/auth/me');
+        const result = await response.json();
+        
+        if (result.success) {
+          const userNameElement = document.getElementById('user-name');
+          if (userNameElement) {
+            userNameElement.textContent = result.host.navn;
+          }
+        } else {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        window.location.href = '/';
+      }
+    }
+    
+    // Logout funktion
+    async function logout() {
+      try {
+        const response = await fetch('/api/auth/logout', {
+          method: 'POST'
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Fejl ved logout:', error);
+      }
+    }
+    
     // Load events når siden loader
-    window.addEventListener('DOMContentLoaded', loadAllEvents);
+    window.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+      }
+      loadUserInfo();
+      loadAllEvents();
+    });
   </script>
 </body>
 </html>
