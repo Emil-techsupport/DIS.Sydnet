@@ -3,7 +3,7 @@ const {getAllHosts } = require("./mockHosts");
 
 //Opretter variable med events indeni
 const mockEvents = {
-  // Events der tilhører Anna(Anna er logget ind, derfor ses disse events på forsiden)
+  // Events der tilhører Anna (Yoga sted)
   annasEvents: [
     {
       værtID: 1,
@@ -21,91 +21,77 @@ const mockEvents = {
     },
     {
       værtID: 1,
-      id: 5,
-      titel: "Aarhus Street Food Tour",
-      beskrivelse: "Oplev Aarhus' bedste street food med lokale guider. Smag på autentisk dansk mad.",
-      varighed: "3 timer",
-      pris: 400,
-      dato: "2025-12-20",
-      tidspunkt: "12:00",
-      samarbejde: false,
-      lokation: "Aarhus",
-      kategori: "Tours",
-      eventkapacitet: "25 personer"
-    },
-    {
-      værtID: 1,
       id: 2,
-      titel: "Vinproveri med Lokale Vingårde",
-      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter.",
-      varighed: "2 timer",
-      pris: 350,
-      dato: "2025-12-20",
-      tidspunkt: "18:00",
-      samarbejde: false,
-      lokation: "København",
-      kategori: "Food & Tastings",
-      eventkapacitet: "15 personer"
-    },
-    {
-      værtID: 1,
-      id: 6,
-      titel: "test",
-      beskrivelse: "Start dagen med en afslappende yoga-session i det smukke solskin. Perfekt til at finde ro og balance.",
-      varighed: "60 minutter",
-      pris: 150,
-      dato: "2025-12-20",
-      tidspunkt: "08:00",
+      titel: "Aften Yoga ved Candlelight",
+      beskrivelse: "Afslappende yoga-session ved levende lys. Perfekt til at afslutte dagen med ro og mindfulness.",
+      varighed: "75 minutter",
+      pris: 180,
+      dato: "2025-12-21",
+      tidspunkt: "19:00",
       samarbejde: true,
       lokation: "København",
       kategori: "Health & Yoga",
-      eventkapacitet: "35 personer"
+      eventkapacitet: "30 personer"
+    },
+    {
+      værtID: 1,
+      id: 3,
+      titel: "Power Yoga for Begyndere",
+      beskrivelse: "Dynamisk yoga-session for begyndere. Byg styrke og fleksibilitet i et støttende miljø.",
+      varighed: "60 minutter",
+      pris: 160,
+      dato: "2025-12-22",
+      tidspunkt: "10:00",
+      samarbejde: true,
+      lokation: "København",
+      kategori: "Health & Yoga",
+      eventkapacitet: "25 personer"
     }
   ],
 
-  // Events der tilhører Tim(Events som Anna kan samarbejde med)
+  // Events der tilhører Tim (Vin sted)
   timsEvents: [
     {
       værtID: 2,
-      id: 2,
+      id: 1,
       titel: "Vinproveri med Lokale Vingårde",
-      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter.",
+      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter fra eksperter.",
       varighed: "2 timer",
       pris: 350,
       dato: "2025-12-20",
       tidspunkt: "18:00",
-      samarbejde: false,
+      samarbejde: true,
       lokation: "København",
       kategori: "Food & Tastings",
       eventkapacitet: "15 personer"
     },
     {
       værtID: 2,
-      id: 3,
-      titel: "Traditionel Finsk Sauna",
-      beskrivelse: "Oplev autentisk finsk sauna med afslappende atmosfære. Inkluderer afkøling i fjorden.",
-      varighed: "90 minutter",
-      pris: 200,
-      dato: "2025-12-20",
-      tidspunkt: "16:00",
+      id: 2,
+      titel: "Rødvin Aften med Ost",
+      beskrivelse: "Oplev en eksklusiv aften med udvalgte rødvine og lækre oste. Perfekt kombination af smag og atmosfære.",
+      varighed: "2.5 timer",
+      pris: 450,
+      dato: "2025-12-21",
+      tidspunkt: "19:30",
       samarbejde: true,
-      lokation: "Aarhus",
-      kategori: "Health & Yoga",
-      eventkapacitet: "10 personer"
+      lokation: "København",
+      kategori: "Food & Tastings",
+      eventkapacitet: "12 personer"
     },
     {
       værtID: 2,
       id: 3,
-      titel: "Traditionel Finsk Sauna",
-      beskrivelse: "Oplev autentisk finsk sauna med afslappende atmosfære. Inkluderer afkøling i fjorden.",
-      varighed: "90 minutter",
-      pris: 200,
-      dato: "2025-12-20",
-      tidspunkt: "16:00",
+      titel: "Champagne & Bubbles",
+      beskrivelse: "Fejr med champagne og bobler. Smag på forskellige champagner og lær om boblenes verden.",
+      varighed: "1.5 timer",
+      pris: 400,
+      dato: "2025-12-22",
+      tidspunkt: "17:00",
       samarbejde: true,
-      lokation: "Aarhus",
-      kategori: "Health & Yoga",
-      eventkapacitet: "10 personer"
+      lokation: "København",
+      kategori: "Food & Tastings",
+      eventkapacitet: "20 personer"
     }
   ]
 };

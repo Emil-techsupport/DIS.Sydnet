@@ -5,20 +5,27 @@ const hosts = [
   {
     værtID: 1,
     navn: "Anna",
-    email: "anna@events.dk",
-    telefonNr: "+45 12 34 56 78",
+    email: "anna@understory.dk",
+    password: "anna123", // Simpelt password for test
+    telefonNr: "+4591977138", // Medas nr
     lokation: "København",
-    apiUrl: "https://jsonplaceholder.typicode.com/posts"
+    apiUrl: "https://jsonplaceholder.typicode.com/posts" // idk om vi skal bruge det 
   },
   {
     værtID: 2,
     navn: "Tim",
-    email: "tim@events.dk",
-    telefonNr: "+45 23 45 67 89",
+    email: "tim@understory.dk",
+    password: "tim123", // Simpelt password for test
+    telefonNr: "+4591977138", // Medas nr
     lokation: "København",
-    apiUrl: "https://jsonplaceholder.typicode.com/users"
+    apiUrl: "https://jsonplaceholder.typicode.com/users" // idk om vi skal bruge det 
   }
 ];
+
+// Funktion til at finde vært efter email og password
+function findHostByCredentials(email, password) {
+  return hosts.find(host => host.email === email && host.password === password);
+}
 
 // Funktioner til at hente hosts
 function getAllHosts() {
@@ -47,6 +54,7 @@ module.exports = {
   getHostById,
   getHostsByLocation,
   getHostsByCategory,
-  getActiveHosts
+  getActiveHosts,
+  findHostByCredentials
 };
 
