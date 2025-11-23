@@ -48,13 +48,16 @@ async function sendSMSTilVært(beskedData) {
     }
     
     const værtTlf = værtTelefonnumre[beskedData.eventInfo.host];
+    console.log('Vært telefonnummer fundet:', værtTlf);
     
     if (!værtTlf) {
+        console.error('Vært ikke fundet i værtTelefonnumre:', beskedData.eventInfo.host);
         throw new Error(`Vært '${beskedData.eventInfo.host}' ikke fundet`);
     }
     
     // Gem tracking
     aktiveBeskeder[værtTlf] = beskedData.senderPhone;
+    console.log('Tracking gemt:', { værtTlf, senderPhone: beskedData.senderPhone });
     
     // Send SMS til vært
     const smsBesked = `Ny kollab-anmodning!
@@ -70,6 +73,7 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
 
 - Understory`.trim();
     
+    console.log('Forsøger at sende SMS til vært:', { from: twilioPhoneNumber, to: værtTlf });
     let message;
     try {
         message = await client.messages.create({
@@ -77,7 +81,10 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
             from: twilioPhoneNumber,
             to: værtTlf
         });
+        console.log('SMS sendt til vært succesfuldt:', message.sid);
     } catch (error) {
+        console.error('Twilio fejl ved afsendelse til vært:', error.message);
+        console.error('Twilio fejl detaljer:', error);
         throw new Error(`Twilio fejl ved afsendelse til vært: ${error.message}`);
     }
     
@@ -89,13 +96,17 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 
 - Understory`;
     
+    console.log('Forsøger at sende bekræftelse til afsender:', { from: twilioPhoneNumber, to: beskedData.senderPhone });
     try {
         await client.messages.create({
             body: bekræftelsesBesked,
             from: twilioPhoneNumber,
             to: beskedData.senderPhone
         });
+        console.log('Bekræftelse sendt til afsender succesfuldt');
     } catch (error) {
+        console.error('Twilio fejl ved bekræftelse til afsender:', error.message);
+        console.error('Twilio fejl detaljer:', error);
         throw new Error(`Twilio fejl ved bekræftelse til afsender: ${error.message}`);
     }
     
