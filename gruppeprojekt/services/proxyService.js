@@ -11,7 +11,7 @@ const {getEventsByHostName} = require('../data/mockEvents');
 //Gør det muligt at cache responses
 const cache = require('./caching');
 
-
+/*
 //Henter events fra alle hosts via proxy
 //Tilføjer cache og RTT målinger
 async function fetchEventsFromHost() {
@@ -29,7 +29,7 @@ async function fetchEventsFromHost() {
   
     // Hvis det ikke ligger i cashen, så hent data'en igen
     console.log('Cache miss - fetching from APIs');
-
+*/
      //Henter events ud fra host og tilføjer RTT
     async function proxyRequest(host) {
       // Gemmer starttidspunktet for senere at kunne måle round trip timen
@@ -63,73 +63,22 @@ async function fetchEventsFromHost() {
         events: alleEvents || null   
       };
 }
+/*
+    let host = getAllHosts();
+    let annahost = host[0]
 
-/**
- * Hovedfunktion: Henter events/data fra alle aktive værter via proxy
- * Array med data fra alle værter inkl. RTT målinger
- */
-async function fetchEventsFromHosts() {
-  try {
-    // Cache key til at identificere cached data
-    const cacheKey = 'vearter_data';
-    
-    // Tjek om data allerede er i cache
-    // Hvis cache findes og ikke er udløbet, returner cached data (hurtigere!)
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      console.log('Returning data from cache'); // Logger at cache bruges
-      return cachedData;
-    }
-    
-    //Får fat i alle hosts
-    let hosts = getAllHosts();
-    
-    //Får fat i vores første host(Anna)
-    let annahost = hosts[0]
-
-    //console.log("******Få fat i host Anna******");
+    //console.log(annahost);
+    //console.log("******Getallhosts[0]******");
     //console.log(annahost);
     //console.log(annahost.navn);
 
     //Gemmer svaret fra proxyRequest funktionen, med Anna som den givne host
-    hostOgEventInfo = proxyRequest(annahost);
-
-    //console.log("**********Det der kommer ud af proxyRequest************")
-    //console.log(hostOgEventInfo);
-    
+    hostOgEventInfo = await proxyRequest(annahost);
   
     // Gem resultater i cachen i 60 sekunder
     cache.set(cacheKey, hostOgEventInfo, 60000);
     // Hvis ikke i cache, hent data fra API'er
     console.log('Cache miss - fetching from APIs'); // Logger at data hentes
-    
-    // Filtrerer hosts array for kun at få aktive værter
-    // Dette sikrer at vi kun henter data fra værter der er aktive
-    // Filter returnerer et nyt array med kun de værter hvor status === 'active'
-    //let getActiveHosts = getAllHosts.filter(host => host.status === 'active');
-    
-    // Looper gennem alle aktive værter
-    // For hver vært starter vi et async request (men venter ikke på det)
-    // Dette gør at alle requests kører parallelt 
-    
-    let host = getAllHosts();
-    
-    let annahost = host[0]
-    console.log(annahost);
-    console.log("******Getallhosts[0]******");
-    console.log(annahost);
-    console.log(annahost.navn);
-
-    console.log("**********Det der kommer ud af proxyRequest************")
-    test = await proxyRequest(annahost);
-    console.log(test);
-    
-    // Gem resultater i cache for fremtidige requests
-    // TTL (Time To Live) = 60000 ms = 60 sekunder
-    // Dette betyder at cached data er gyldig i 60 sekunder
-    // Efter 60 sekunder vil cache udløbe og data hentes igen fra API'er
-    cache.set(cacheKey, test, 60000);
-    console.log('Data cached for 60 seconds'); // Logger at data er cached
     
     //Returnerer info om host, alle events for den givne host, samt RTT for processen. Og alt dette er gemt i cachen
     return hostOgEventInfo;
@@ -142,13 +91,9 @@ async function fetchEventsFromHosts() {
     throw new Error("Kunne ikke hente data fra værter");
   }
 }
-
-//Gør at vi kan bruge "fetchEventsFromHost" funktionen i andre filer
-module.exports = { 
-  fetchEventsFromHost 
-
+*/
 /**
- * Henter events for en specifik vært ( kan bruges til alle hosts)
+ * Henter events for en specifik vært (kan bruges til alle hosts)
  *  Navnet på værten hvis events skal hentes
  */
 async function fetchHostEvents(hostNavn) {
@@ -181,13 +126,14 @@ async function fetchHostEvents(hostNavn) {
     cache.set(cacheKey, result, 60000);
     
     return result;
+
   } catch (error) {
     console.error(`Fejl i fetchHostEvents for ${hostNavn}:`, error);
     throw new Error(`Kunne ikke hente events for ${hostNavn}`);
   }
 }
 
+//Gør at vi kan bruge "fetchEventsFromHost" funktionen i andre filer
 module.exports = { 
-  fetchEventsFromHosts,
   fetchHostEvents
 };

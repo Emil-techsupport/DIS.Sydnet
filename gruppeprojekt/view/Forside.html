@@ -146,6 +146,8 @@
         
         const loggedInHost = authResult.host.navn;
         const response = await fetch('/services/hostEvents?host=' + loggedInHost);
+
+        
         const hostDataClient = await response.json();
         console.log("************HostDataClient********");
         console.log(hostDataClient);

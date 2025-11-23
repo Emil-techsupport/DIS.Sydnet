@@ -1,5 +1,6 @@
 const proxyService = require('../services/proxyService');
 
+/*
 // GET events fra alle værter via proxy
 async function getEvents(req, res) {
   try {
@@ -22,7 +23,7 @@ async function getEvents(req, res) {
     });
   }
 }
-
+*/
 // Hent events for en vært
 async function getHostEvents(req, res) {
   try {
@@ -56,7 +57,6 @@ async function getHostEvents(req, res) {
 
 // Eksporterer funktionerne så de kan bruges i routes
 module.exports = {
-  getEvents,
   getHostEvents
 };
 

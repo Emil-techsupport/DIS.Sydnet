@@ -1,7 +1,7 @@
 //Henter funktion til at få fat i alle vores hosts fra mockHosts.js
 const {getAllHosts } = require("./mockHosts");
 
-//Opretter variable med events indeni
+//Opretter variable med events inden i
 const mockEvents = {
   // Events der tilhører Anna (Yoga sted)
   annasEvents: [
@@ -96,8 +96,6 @@ const mockEvents = {
   ]
 };
 
-
-
 // Funktion til at få alle events baseret på givent vært navn
 function getEventsByHostName(værtNavn) {
   
@@ -120,7 +118,6 @@ function getEventsByHostName(værtNavn) {
         break;
     }
   }
-
   //console.log("******Host ID*****")
   //console.log(hostId);
 

@@ -40,21 +40,12 @@ function getHostsByLocation(lokation) {
   return hosts.filter(host => host.lokation === lokation);
 }
 
-function getHostsByCategory(kategori) {
-  return hosts.filter(host => host.kategori === kategori);
-}
-
-function getActiveHosts() {
-  return hosts.filter(host => host.status === "active");
-}
 
 module.exports = {
   hosts,
   getAllHosts,
   getHostById,
   getHostsByLocation,
-  getHostsByCategory,
-  getActiveHosts,
   findHostByCredentials
 };
 
