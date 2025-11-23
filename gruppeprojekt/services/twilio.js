@@ -46,26 +46,33 @@ function gemAktiveBeskeder() {
         const dataDir = path.dirname(aktiveBeskederFil);
         if (!fs.existsSync(dataDir)) {
             fs.mkdirSync(dataDir, { recursive: true });
+            console.log('📁 Data mappe oprettet:', dataDir);
         }
         fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
-        console.log('✅ aktiveBeskeder gemt til fil');
+        console.log('✅ aktiveBeskeder gemt til fil:', aktiveBeskederFil);
+        console.log('📊 Indhold:', JSON.stringify(aktiveBeskeder, null, 2));
     } catch (error) {
-        console.error('Fejl ved at gemme aktiveBeskeder:', error.message);
+        console.error('❌ Fejl ved at gemme aktiveBeskeder:', error.message);
+        console.error('Fejl detaljer:', error);
     }
 }
 
 // Indlæs aktive beskeder fra fil
 function indlæsAktiveBeskeder() {
     try {
+        console.log('🔍 Søger efter aktiveBeskeder fil:', aktiveBeskederFil);
         if (fs.existsSync(aktiveBeskederFil)) {
             const data = fs.readFileSync(aktiveBeskederFil, 'utf8');
             aktiveBeskeder = JSON.parse(data);
             console.log('✅ aktiveBeskeder indlæst fra fil:', Object.keys(aktiveBeskeder).length, 'nøgler');
+            console.log('📊 Indhold:', JSON.stringify(aktiveBeskeder, null, 2));
         } else {
-            console.log('Ingen eksisterende aktiveBeskeder fil - starter med tom objekt');
+            console.log('⚠️ Ingen eksisterende aktiveBeskeder fil - starter med tom objekt');
+            console.log('📁 Fil sti:', aktiveBeskederFil);
         }
     } catch (error) {
-        console.error('Fejl ved at indlæse aktiveBeskeder:', error.message);
+        console.error('❌ Fejl ved at indlæse aktiveBeskeder:', error.message);
+        console.error('Fejl detaljer:', error);
         aktiveBeskeder = {};
     }
 }
@@ -114,16 +121,17 @@ async function sendSMSTilVært(beskedData) {
     aktiveBeskeder[normaliseretSenderPhone] = normaliseretVærtTlf;
     aktiveBeskeder[normaliseretSenderPhone.replace(/[^\d+]/g, '')] = normaliseretVærtTlf;
     
-    // Gem til fil så det overlever server genstart
-    gemAktiveBeskeder();
-    
     console.log('✅ Tracking gemt FØR SMS sendes:', { 
         værtTlf: normaliseretVærtTlf, 
         rensetVærtTlf: rensetVærtTlf,
         senderPhone: normaliseretSenderPhone,
         alleNøgler: Object.keys(aktiveBeskeder),
-        antalNøgler: Object.keys(aktiveBeskeder).length
+        antalNøgler: Object.keys(aktiveBeskeder).length,
+        fuldAktiveBeskeder: JSON.stringify(aktiveBeskeder, null, 2)
     });
+    
+    // Gem til fil så det overlever server genstart
+    gemAktiveBeskeder();
     
     // Send SMS til vært
     const smsBesked = `Ny kollab-anmodning!
