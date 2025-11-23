@@ -1,8 +1,13 @@
 const twilio = require('twilio');
+const fs = require('fs');
+const path = require('path');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+
+// Fil til at gemme aktive beskeder
+const aktiveBeskederFil = path.join(__dirname, '..', 'data', 'aktiveBeskeder.json');
 
 let client = null;
 if (accountSid && authToken && twilioPhoneNumber) {
@@ -32,7 +37,41 @@ const værtTelefonnumre = {
 };
 
 // Tracking: værtB -> værtA så man kan videresende svar
-const aktiveBeskeder = {};
+let aktiveBeskeder = {};
+
+// Gem aktive beskeder til fil
+function gemAktiveBeskeder() {
+    try {
+        // Sørg for at mappen eksisterer
+        const dataDir = path.dirname(aktiveBeskederFil);
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
+        fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
+        console.log('✅ aktiveBeskeder gemt til fil');
+    } catch (error) {
+        console.error('Fejl ved at gemme aktiveBeskeder:', error.message);
+    }
+}
+
+// Indlæs aktive beskeder fra fil
+function indlæsAktiveBeskeder() {
+    try {
+        if (fs.existsSync(aktiveBeskederFil)) {
+            const data = fs.readFileSync(aktiveBeskederFil, 'utf8');
+            aktiveBeskeder = JSON.parse(data);
+            console.log('✅ aktiveBeskeder indlæst fra fil:', Object.keys(aktiveBeskeder).length, 'nøgler');
+        } else {
+            console.log('Ingen eksisterende aktiveBeskeder fil - starter med tom objekt');
+        }
+    } catch (error) {
+        console.error('Fejl ved at indlæse aktiveBeskeder:', error.message);
+        aktiveBeskeder = {};
+    }
+}
+
+// Indlæs data når modulet starter
+indlæsAktiveBeskeder();
 
 // Send SMS til vært og bekræftelse til afsender her bliver SMS beskeden bygget til vært B
 async function sendSMSTilVært(beskedData) {
@@ -60,21 +99,30 @@ async function sendSMSTilVært(beskedData) {
         throw new Error(`Vært '${beskedData.eventInfo.host}' ikke fundet`);
     }
     
-    // Gem tracking - normaliser telefonnumre og gem i flere formater
+    // Gem tracking FØRST - normaliser telefonnumre og gem i flere formater
     const normaliseretVærtTlf = værtTlf.replace(/\s/g, '').replace(/^00/, '+');
     const normaliseretSenderPhone = beskedData.senderPhone.replace(/\s/g, '').replace(/^00/, '+');
     const rensetVærtTlf = normaliseretVærtTlf.replace(/[^\d+]/g, '');
     
     // Gem i flere formater for at være sikker på at finde det igen
+    // Gem begge retninger fra starten så de kan kommunikere hele tiden
     aktiveBeskeder[normaliseretVærtTlf] = normaliseretSenderPhone;
     aktiveBeskeder[rensetVærtTlf] = normaliseretSenderPhone;
     aktiveBeskeder[værtTlf] = normaliseretSenderPhone;
     
-    console.log('Tracking gemt:', { 
+    // Gem også den modsatte retning så begge kan svare med det samme
+    aktiveBeskeder[normaliseretSenderPhone] = normaliseretVærtTlf;
+    aktiveBeskeder[normaliseretSenderPhone.replace(/[^\d+]/g, '')] = normaliseretVærtTlf;
+    
+    // Gem til fil så det overlever server genstart
+    gemAktiveBeskeder();
+    
+    console.log('✅ Tracking gemt FØR SMS sendes:', { 
         værtTlf: normaliseretVærtTlf, 
         rensetVærtTlf: rensetVærtTlf,
         senderPhone: normaliseretSenderPhone,
-        alleNøgler: Object.keys(aktiveBeskeder)
+        alleNøgler: Object.keys(aktiveBeskeder),
+        antalNøgler: Object.keys(aktiveBeskeder).length
     });
     
     // Send SMS til vært
@@ -138,6 +186,14 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log('håndterIndkommendeSMS kaldt med:', { fraNummer, tilNummer, beskedTekst });
     console.log('aktiveBeskeder:', aktiveBeskeder);
+    console.log('Antal aktive beskeder:', Object.keys(aktiveBeskeder).length);
+    
+    if (Object.keys(aktiveBeskeder).length === 0) {
+        console.error('⚠️ ADVARSEL: aktiveBeskeder er tom! Dette kan betyde:');
+        console.error('   1. Serveren er blevet genstartet efter besked blev sendt');
+        console.error('   2. Tracking blev aldrig gemt da besked blev sendt');
+        console.error('   3. Beskeden blev sendt før tracking blev gemt');
+    }
     
     if (!client) {
         console.error('Twilio client er ikke oprettet');
@@ -161,14 +217,38 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     if (afsenderTelefon) {
         console.log('Forsøger at videresende besked til:', afsenderTelefon);
         try {
-            await client.messages.create({
+            const result = await client.messages.create({
                 body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
                 from: twilioPhoneNumber,
                 to: afsenderTelefon
             });
             console.log('Besked videresendt succesfuldt til:', afsenderTelefon);
+            console.log('Twilio Message SID:', result.sid);
+            console.log('Twilio Status:', result.status);
+            console.log('Twilio Error Code:', result.errorCode);
+            console.log('Twilio Error Message:', result.errorMessage);
+            
+            // Gem også den modsatte retning så begge kan svare til hinanden
+            const normaliseretAfsender = afsenderTelefon.replace(/\s/g, '').replace(/^00/, '+');
+            const rensetAfsender = normaliseretAfsender.replace(/[^\d+]/g, '');
+            
+            aktiveBeskeder[normaliseretAfsender] = normaliseretFraNummer;
+            aktiveBeskeder[rensetAfsender] = normaliseretFraNummer;
+            aktiveBeskeder[afsenderTelefon] = normaliseretFraNummer;
+            
+            // Gem til fil så det overlever server genstart
+            gemAktiveBeskeder();
+            
+            console.log('Modsat retning gemt:', { 
+                fra: normaliseretAfsender, 
+                til: normaliseretFraNummer,
+                aktiveBeskeder: Object.keys(aktiveBeskeder)
+            });
         } catch (error) {
             console.error('Fejl ved videresendelse af besked:', error.message);
+            console.error('Fejl kode:', error.code);
+            console.error('Fejl status:', error.status);
+            console.error('Fuld fejl:', JSON.stringify(error, null, 2));
             throw error;
         }
     } else {
