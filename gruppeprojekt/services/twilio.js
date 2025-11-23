@@ -8,14 +8,10 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 // Opret Twilio klient her bliver Twilio klient oprettet med accountSid og authToken fra .env filen så det der sætter forbindelsen til Twilio det er sådan vi får adgang til twilio API 
 const client = twilio(accountSid, authToken);
 
-// Værters telefonnumre lige nu er det meda nr man i kan putte jeres nr ind for at teste det 
-// Dette laves om senere når vi kun har de 2 værter 
+// Værters telefonnumre 
 const værtTelefonnumre = {
-    'Yoga by Anna': '+4591977138',
-    'Vin & Venner': '+4591977138',
-    'Madlavning med Marie': '+4591977138',
-    'Fitness med Frank': '+4591977138',
-    'Kunst med Katrine': '+4591977138'
+    'Anna': '+4591977138',  // Medas nr 
+    'Tim': '+4591977138'    // Medas nr
 };
 
 // Tracking: værtB -> værtA så man kan videresende svar

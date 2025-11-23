@@ -70,8 +70,9 @@
       const loadingMessage = document.getElementById('loading-message');
       
       try {
-        // Hent data fra API
-        const response = await fetch('/services/hostsWithEvents');
+        // Hent Anna's events (når Anna er logget ind)
+        // Dynamisk endpoint - kan ændres til hvilken som helst vært
+        const response = await fetch('/services/hostEvents?host=Anna');
         const hostDataClient = await response.json();
         console.log("************HostDataClient********");
         console.log(hostDataClient);

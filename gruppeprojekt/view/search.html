@@ -96,18 +96,39 @@
     // Hent alle events når siden loader
     async function loadAllEvents() {
       try {
-        const response = await fetch('/services/events');
+        const hostNavn = 'Tim';
+        const response = await fetch('/services/hostEvents?host=' + hostNavn);
         const result = await response.json();
         
         if (result.success && result.data) {
-          allEvents = result.data;
-          // Vis alle events som standard
+          const hostData = result.data;
+          const eventsArray = hostData.events[0];
+          allEvents = [];
+          
+          // Loop gennem events og konverter dem
+          for (let i = 0; i < eventsArray.length; i++) {
+            const event = eventsArray[i];
+            
+            allEvents.push({
+              source: hostData.navn,
+              kategori: event.kategori,
+              lokation: hostData.lokation,
+              data: {
+                title: event.titel,
+                beskrivelse: event.beskrivelse,
+                dato: event.dato,
+                tid: event.tidspunkt,
+                varighed: event.varighed,
+                pris: event.pris
+              }
+            });
+          }
+          
           displayResults(allEvents);
         }
       } catch (error) {
-        console.error('Fejl ved hentning af events:', error);
         document.getElementById('search-results').innerHTML = 
-          '<div class="no-results">Kunne ikke hente oplevelser. Prøv igen senere.</div>';
+          '<div class="no-results">Kunne ikke hente oplevelser.</div>';
       }
     }
     
