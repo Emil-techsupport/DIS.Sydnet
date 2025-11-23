@@ -1,11 +1,11 @@
 // Mock events/oplevelser data på dansk
 // Dansk data til at erstatte jsonplaceholder API
 
-const { getAllHosts } = require("./mockHosts");
+const {getAllHosts } = require("./mockHosts");
 
 const mockEvents = {
-  // Events for Yoga by Anna
-  yogaEvents: [
+  // Events der tilhører Anna
+  annasEvents: [
     {
       værtID: 1,
       id: 1,
@@ -19,65 +19,7 @@ const mockEvents = {
       lokation: "København",
       kategori: "Health & Yoga",
       eventkapacitet: "35 personer"
-    }
-  ],
-
-  // Events for Vin & Fjord
-  vinEvents: [
-    {
-      værtID: 1,
-      id: 2,
-      titel: "Vinproveri med Lokale Vingårde",
-      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter.",
-      varighed: "2 timer",
-      pris: 350,
-      dato: "2025-12-20",
-      tidspunkt: "18:00",
-      samarbejde: false,
-      lokation: "København",
-      kategori: "Food & Tastings",
-      eventkapacitet: "15 personer"
-    }
-  ],
-
-  // Events for Sauna & Silence
-  saunaEvents: [
-    {
-      værtID: 1,
-      id: 3,
-      titel: "Traditionel Finsk Sauna",
-      beskrivelse: "Oplev autentisk finsk sauna med afslappende atmosfære. Inkluderer afkøling i fjorden.",
-      varighed: "90 minutter",
-      pris: 200,
-      dato: "2025-12-20",
-      tidspunkt: "16:00",
-      samarbejde: true,
-      lokation: "Aarhus",
-      kategori: "Health & Yoga",
-      eventkapacitet: "10 personer"
-    }
-  ],
-
-  // Events for Copenhagen Adventures
-  adventureEvents: [
-    {
-      værtID: 1,
-      id: 4,
-      titel: "Kajak Tur gennem Kanalerne",
-      beskrivelse: "Udforsk Københavns kanaler fra vandet. Se byen fra en helt ny vinkel.",
-      varighed: "2.5 timer",
-      pris: 300,
-      dato: "2025-12-20",
-      tidspunkt: "14:00",
-      samarbejde: true,
-      lokation: "København",
-      kategori: "Adventure",
-      eventkapacitet: "50 personer"
-    }
-  ],
-
-  // Events for Aarhus Food Tours
-  foodTourEvents: [
+    },
     {
       værtID: 1,
       id: 5,
@@ -91,6 +33,80 @@ const mockEvents = {
       lokation: "Aarhus",
       kategori: "Tours",
       eventkapacitet: "25 personer"
+    },
+    {
+      værtID: 1,
+      id: 2,
+      titel: "Vinproveri med Lokale Vingårde",
+      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter.",
+      varighed: "2 timer",
+      pris: 350,
+      dato: "2025-12-20",
+      tidspunkt: "18:00",
+      samarbejde: false,
+      lokation: "København",
+      kategori: "Food & Tastings",
+      eventkapacitet: "15 personer"
+    },
+    {
+      værtID: 1,
+      id: 6,
+      titel: "test",
+      beskrivelse: "Start dagen med en afslappende yoga-session i det smukke solskin. Perfekt til at finde ro og balance.",
+      varighed: "60 minutter",
+      pris: 150,
+      dato: "2025-12-20",
+      tidspunkt: "08:00",
+      samarbejde: true,
+      lokation: "København",
+      kategori: "Health & Yoga",
+      eventkapacitet: "35 personer"
+    }
+  ],
+
+  // Events der tilhører Tim
+  timsEvents: [
+    {
+      værtID: 2,
+      id: 2,
+      titel: "Vinproveri med Lokale Vingårde",
+      beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter.",
+      varighed: "2 timer",
+      pris: 350,
+      dato: "2025-12-20",
+      tidspunkt: "18:00",
+      samarbejde: false,
+      lokation: "København",
+      kategori: "Food & Tastings",
+      eventkapacitet: "15 personer"
+    },
+    {
+      værtID: 2,
+      id: 3,
+      titel: "Traditionel Finsk Sauna",
+      beskrivelse: "Oplev autentisk finsk sauna med afslappende atmosfære. Inkluderer afkøling i fjorden.",
+      varighed: "90 minutter",
+      pris: 200,
+      dato: "2025-12-20",
+      tidspunkt: "16:00",
+      samarbejde: true,
+      lokation: "Aarhus",
+      kategori: "Health & Yoga",
+      eventkapacitet: "10 personer"
+    },
+    {
+      værtID: 2,
+      id: 3,
+      titel: "Traditionel Finsk Sauna",
+      beskrivelse: "Oplev autentisk finsk sauna med afslappende atmosfære. Inkluderer afkøling i fjorden.",
+      varighed: "90 minutter",
+      pris: 200,
+      dato: "2025-12-20",
+      tidspunkt: "16:00",
+      samarbejde: true,
+      lokation: "Aarhus",
+      kategori: "Health & Yoga",
+      eventkapacitet: "10 personer"
     }
   ]
 };
@@ -137,10 +153,9 @@ function getEventsByHost2(værtNavn) {
   console.log(bestemtHostEvents);
 
   return[bestemtHostEvents];
-
 }
 
-
+/*
 // Funktion til at få events baseret på værtnavn
 function getEventsByHost(værtNavn) {
   switch(værtNavn) {
@@ -158,24 +173,26 @@ function getEventsByHost(værtNavn) {
       return [];
   }
 }
+*/
 
 
-//getEventsByHost2("Yoga by Anna");
+//getEventsByHost2("Anna");
 
 
 
 
 // Funktion til at få et tilfældigt event fra en vært
+/*
 function getRandomEvent(værtNavn) {
   const events = getEventsByHost(værtNavn);
   if (events.length === 0) return null;
   return events [Math.floor(Math.random() * events.length)];
 }
-
+*/
 module.exports = {
   mockEvents,
-  getEventsByHost,
-  getEventsByHost2,
-  getRandomEvent
+  //getEventsByHost,
+  getEventsByHost2
+  //getRandomEvent
 };
 

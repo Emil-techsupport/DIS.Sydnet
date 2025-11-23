@@ -13,6 +13,7 @@ async function getEvents(req, res) {
       success: true,
       data: results,
     });
+
   } catch (error) {
     console.error('Fejl i controller:', error);
     res.status(500).json({
@@ -21,6 +22,9 @@ async function getEvents(req, res) {
     });
   }
 }
+
+//getEvents();
+
 // Eksporterer getEvents funktionen så den kan bruges i app.js
 module.exports = {
   getEvents

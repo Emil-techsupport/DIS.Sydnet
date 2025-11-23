@@ -6,10 +6,10 @@
 const axios = require("axios");
 
 // Importerer hosts array fra mock database 
-const {hosts} = require('../data/mockHosts');
+const {getAllHosts} = require('../data/mockHosts');
 
 // Importerer dansk mock events data
-const {getRandomEvent} = require('../data/mockEvents');
+//const {getRandomEvent} = require('../data/mockEvents');
 const {getEventsByHost2} = require('../data/mockEvents');
 
 // Importerer caching service til at cachee responses
@@ -37,13 +37,15 @@ async function fetchEventsFromHosts() {
     
     // Array til at gemme alle async requests (promises)
     // Disse vil blive kørt parallelt samtidigt
-    const requests = [];
+    //const requests = [];
 
     /**
      * Hjælpefunktion: Henter data fra en enkelt vært og måler RTT
      * host - Vært objekt fra mockHosts med apiUrl, navn, osv.
      *  Objekt med vært info, RTT og hentet data
      */
+
+
     async function proxyRequest(host) {
       // Gemmer starttidspunkt for at måle Round Trip Time (RTT)
       // RTT = hvor lang tid det tager at hente data fra API
@@ -51,10 +53,10 @@ async function fetchEventsFromHosts() {
       
       // Simulerer API request med dansk mock data
       // henter mock vært data fra mockDB.js
-      await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
+      //await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
       
       // Henter mock event data baseret på vært navn
-      const mockEvent = getRandomEvent(host.navn);
+      const mockEvent = getEventsByHost2(host.navn);
       //const mockEvent2 = getEventsByHost2(host.navn);
 
       console.log("********Mockevent*********");
@@ -71,10 +73,8 @@ async function fetchEventsFromHosts() {
       // Dette objekt sendes videre til controller og derefter til klienten
       return {
         navn: host.navn,       
-        URL: host.apiUrl,         
-        kategori: host.kategori,  
-        lokation: host.lokation,  
-        status: host.status,      
+        URL: host.apiUrl,           
+        lokation: host.lokation,        
         ID: host.værtID,          
         rtt,                      
         events: mockEvent || null      // Dansk mock data (direkte objekt, ikke array)
@@ -85,33 +85,44 @@ async function fetchEventsFromHosts() {
     // Filtrerer hosts array for kun at få aktive værter
     // Dette sikrer at vi kun henter data fra værter der er aktive
     // Filter returnerer et nyt array med kun de værter hvor status === 'active'
-    let getActiveHosts = hosts.filter(host => host.status === 'active');
+    //let getActiveHosts = getAllHosts.filter(host => host.status === 'active');
     
     // Looper gennem alle aktive værter
     // For hver vært starter vi et async request (men venter ikke på det)
     // Dette gør at alle requests kører parallelt 
-    for (let i = 0; i < getActiveHosts.length; i += 1) {
-      const host = getActiveHosts[i];           // Henter nuværende vært
-      const request = proxyRequest(host);       // Starter API request (returnerer Promise)
-      requests.push(request);                   // Tilføjer Promise til requests array
-    }
     
+    let host = getAllHosts();
+    
+    let annahost = host[0]
+    console.log(annahost);
+    console.log("******Getallhosts[0]******");
+    console.log(annahost);
+    console.log(annahost.navn);
+
+    console.log("**********Det der kommer ud af proxyRequest************")
+    test = proxyRequest(annahost);
+    console.log(test);
+    
+    //request = proxyRequest(host);
+    //requests.push(request);
+    
+
     // Promise.all venter på at ALLE requests er færdige
     // Dette er asynkron programmering, alle requests kører samtidigt
     // Når alle er færdige, får vi et array med alle resultaterne
     // Dette er meget hurtigere end at vente på hver request én ad gangen
-    const results = await Promise.all(requests);
+    //const results = await Promise.all(requests);
     
     // Gem resultater i cache for fremtidige requests
     // TTL (Time To Live) = 60000 ms = 60 sekunder
     // Dette betyder at cached data er gyldig i 60 sekunder
     // Efter 60 sekunder vil cache udløbe og data hentes igen fra API'er
-    cache.set(cacheKey, results, 60000);
+    cache.set(cacheKey, test, 60000);
     console.log('Data cached for 60 seconds'); // Logger at data er cached
     
     // Returnerer array med alle resultater fra alle værter
     // Hvert element i arrayet er et objekt med vært info + data (se proxyRequest return)
-    return results;
+    return test;
     
   } catch (error) {
     // Hvis noget går galt (fx API er nede, netværksfejl, osv.)
