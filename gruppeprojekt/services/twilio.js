@@ -5,8 +5,12 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
 let client = null;
-if (accountSid && authToken) {
-    client = twilio(accountSid, authToken);
+if (accountSid && authToken && twilioPhoneNumber) {
+    try {
+        client = twilio(accountSid, authToken);
+    } catch (error) {
+        console.error('Fejl ved oprettelse af Twilio klient:', error.message);
+    }
 }
 
 // Værters telefonnumre 
