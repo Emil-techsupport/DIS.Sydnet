@@ -1,10 +1,9 @@
-// Mock events/oplevelser data på dansk
-// Dansk data til at erstatte jsonplaceholder API
-
+//Henter funktion til at få fat i alle vores hosts fra mockHosts.js
 const {getAllHosts } = require("./mockHosts");
 
+//Opretter variable med events indeni
 const mockEvents = {
-  // Events der tilhører Anna
+  // Events der tilhører Anna(Anna er logget ind, derfor ses disse events på forsiden)
   annasEvents: [
     {
       værtID: 1,
@@ -64,7 +63,7 @@ const mockEvents = {
     }
   ],
 
-  // Events der tilhører Tim
+  // Events der tilhører Tim(Events som Anna kan samarbejde med)
   timsEvents: [
     {
       værtID: 2,
@@ -113,86 +112,55 @@ const mockEvents = {
 
 
 
-// Funktion til at få events baseret på værtnavn part 2
-function getEventsByHost2(værtNavn) {
+// Funktion til at få alle events baseret på givent vært navn
+function getEventsByHostName(værtNavn) {
   
+  //Får alle host med deres data ud i en variable der hedder "alleHosts"
   let alleHosts = getAllHosts();
+  //Tager fat i alle vores events og gemmer dem i "alleEvents" variablen
   let alleEvents = mockEvents;
-  console.log("******Alle hosts******+")
-  console.log(alleHosts);
+  
+  //console.log("******Alle hosts******")
+  //console.log(alleHosts);
 
+  //Variable til at indeholde hostId'et
   let hostId;
 
+  //For loop der kører alle vores hosts igennem
   for (let i = 0; i < alleHosts.length; i++) {
+    //Hvis hosten der er taget fat i, har samme værtnavn som det der er givet så gem dens id i "hostId" og break.
     if (alleHosts[i].navn == værtNavn) {
         hostId = alleHosts[i].værtID;
         break;
     }
   }
 
-  console.log("******Host ID*****")
-  console.log(hostId);
+  //console.log("******Host ID*****")
+  //console.log(hostId);
 
-  
-  //console.log("*****alleEvents");
-  //console.log(alleEvents);
-  //console.log("*****Event 0 ID******");
-  //console.log(alleEvents[0]);
-
+  //Variabel til at indeholde alle den fundne hosts events
   let bestemtHostEvents = [];
 
+  ////Gennemgår alle events og finder dem hvor "værtID" er ens med det "hosId" vi lige har fundet
   for (const liste of Object.values(alleEvents)) {
     for (const event of liste) {
       if (event.værtID === hostId) {
+        //Hvis eventet har alle værtID og derfor tilhører hosten/værten, så push den ind i "bestemtHostEvents"
         bestemtHostEvents.push(event);
       }
     }
   };
 
-  console.log("******Events der tilhører given Host(udfra værtID)*****")
-  console.log(bestemtHostEvents);
+  //console.log("******Events der tilhører given Host(udfra værtID)*****")
+  //console.log(bestemtHostEvents);
 
+  //Returner et array af alle de events der tilhører den efterspurgte/givne host
   return[bestemtHostEvents];
 }
 
-/*
-// Funktion til at få events baseret på værtnavn
-function getEventsByHost(værtNavn) {
-  switch(værtNavn) {
-    case "Yoga by Anna":
-      return mockEvents.yogaEvents;
-    case "Vin & Fjord":
-      return mockEvents.vinEvents;
-    case "Sauna & Silence":
-      return mockEvents.saunaEvents;
-    case "Copenhagen Adventures":
-      return mockEvents.adventureEvents;
-    case "Aarhus Food Tours":
-      return mockEvents.foodTourEvents;
-    default:
-      return [];
-  }
-}
-*/
-
-
-//getEventsByHost2("Anna");
-
-
-
-
-// Funktion til at få et tilfældigt event fra en vært
-/*
-function getRandomEvent(værtNavn) {
-  const events = getEventsByHost(værtNavn);
-  if (events.length === 0) return null;
-  return events [Math.floor(Math.random() * events.length)];
-}
-*/
+//Gør det muligt at bruge denne variabel og function i andre filer.
 module.exports = {
   mockEvents,
-  //getEventsByHost,
-  getEventsByHost2
-  //getRandomEvent
+  getEventsByHostName
 };
 
