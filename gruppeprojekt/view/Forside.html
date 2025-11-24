@@ -25,7 +25,7 @@
               <span>Oplevelser</span>
             </div>
             <div class="nav-item">
-              <span><a href="/search" style="text-decoration: none; color: inherit;">Søg</a></span>
+              <span><a href="/search" style="text-decoration: none; color: inherit;">Find samarbejde</a></span>
             </div>
             <div class="nav-item">
               <span>Salg</span>
@@ -55,7 +55,7 @@
     <!-- Main content -->
     <main class="main">
       <div class="main-header">
-        <h1 class="title">Oplevelser</h1>
+        <h1 class="title"> Dine Oplevelser/Events</h1>
         <button class="primary-btn" id="oplevelserknap">+ Oplevelse</button>
       </div>
 
@@ -201,7 +201,20 @@
           <div class="experience-subtitle">${subtitle}</div>
         </div>
         `;
-      
+
+        /*
+        const button = document.createElement('button');
+        button.className = 'buttonUnderKort';
+        button.style.cursor = "pointer";
+        // Generer HTML 
+        button.innerHTML = `
+        <div class="experience-image">
+          <div class="draft-badge">"Hello world</div>
+        </div>
+        `;
+        */
+
+
         //console.log("*******check data Inden vi opretter eventlistner********");
         //console.log(eventData);
         //console.log(eventData.id);
@@ -215,6 +228,7 @@
         });  
 
         container.appendChild(card);
+        //container.appendChild(button);
       }
     }
 
