@@ -13,21 +13,10 @@ let client = null;
 if (accountSid && authToken && twilioPhoneNumber) {
     try {
         client = twilio(accountSid, authToken);
-        console.log('Twilio klient oprettet succesfuldt');
-        console.log('Account SID:', accountSid.substring(0, 10) + '...'); // Vis kun første 10 tegn for sikkerhed
-        console.log('Auth Token:', authToken.substring(0, 10) + '...'); // Vis kun første 10 tegn for sikkerhed
-        console.log('Phone Number:', twilioPhoneNumber);
+        
     } catch (error) {
         console.error('Fejl ved oprettelse af Twilio klient:', error.message);
     }
-} else {
-    console.error('Twilio credentials mangler:', {
-        hasAccountSid: !!accountSid,
-        hasAuthToken: !!authToken,
-        hasPhoneNumber: !!twilioPhoneNumber,
-        accountSidLength: accountSid ? accountSid.length : 0,
-        authTokenLength: authToken ? authToken.length : 0
-    });
 }
 
 // Værters telefonnumre 
@@ -39,28 +28,22 @@ const værtTelefonnumre = {
 // Tracking: værtB -> værtA så man kan videresende svar
 let aktiveBeskeder = {};
 
-// Gem aktive beskeder til fil
+// Gem tracking til fil, hvor vi tilføjer nye beskeder og gemmer dem 
 function gemAktiveBeskeder() {
-    try {
-        // Sørg for at mappen eksisterer
-        const dataDir = path.dirname(aktiveBeskederFil);
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir, { recursive: true });
-            console.log('📁 Data mappe oprettet:', dataDir);
-        }
-        
-        fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
-        console.log('✅ aktiveBeskeder gemt til fil:', aktiveBeskederFil);
-    } catch (error) {
-        console.error('❌ Fejl ved at gemme aktiveBeskeder:', error.message);
-        console.error('Fejl detaljer:', error);
+    // Opret data mappen hvis den ikke findes
+    const dataPakke = path.dirname(aktiveBeskederFil);
+    if (!fs.existsSync(dataPakke)) { // existsSync søger efter filen, hvis den ikke findes, opret den
+        fs.mkdirSync(dataPakke, { recursive: true }); // mkdirSync opretter mappen
     }
+    
+    // Gem tracking data til fil
+    // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
+    fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
-// Indlæs aktive beskeder fra fil
+ /*Indlæs aktive beskeder fra fil ***************CHAT HJÆLPER FUNKTION ***************
 function indlæsAktiveBeskeder() {
     try {
-        console.log('🔍 Søger efter aktiveBeskeder fil:', aktiveBeskederFil);
         if (fs.existsSync(aktiveBeskederFil)) {
             const data = fs.readFileSync(aktiveBeskederFil, 'utf8');
             aktiveBeskeder = JSON.parse(data);
@@ -71,118 +54,60 @@ function indlæsAktiveBeskeder() {
             console.log('📁 Fil sti:', aktiveBeskederFil);
         }
     } catch (error) {
-        console.error('❌ Fejl ved at indlæse aktiveBeskeder:', error.message);
-        console.error('Fejl detaljer:', error);
         aktiveBeskeder = {};
     }
 }
+*/
 
 // Indlæs data når modulet starter
-indlæsAktiveBeskeder();
+//indlæsAktiveBeskeder();
+//***************************************************************************************** */
 
-// Send SMS til vært og bekræftelse til afsender her bliver SMS beskeden bygget til vært B
+// Send SMS til vært og bekræftelse til afsender
 async function sendSMSTilVært(beskedData) {
-    console.log('sendSMSTilVært kaldt med:', {
-        host: beskedData.eventInfo?.host,
-        senderName: beskedData.senderName,
-        senderPhone: beskedData.senderPhone
-    });
-    
-    if (!client || !accountSid || !authToken || !twilioPhoneNumber) {
-        console.error('Twilio check fejlede:', {
-            hasClient: !!client,
-            hasAccountSid: !!accountSid,
-            hasAuthToken: !!authToken,
-            hasPhoneNumber: !!twilioPhoneNumber
-        });
-        throw new Error('Twilio credentials mangler i .env fil');
-    }
-    
+  //  kollabside.html linje 269-281 bygger beskedens objekt og det er her vi bruger det til twilio
+    // Find Vært B's telefonnummer (den der modtager beskeden)
     const værtTlf = værtTelefonnumre[beskedData.eventInfo.host];
-    console.log('Vært telefonnummer fundet:', værtTlf);
     
-    if (!værtTlf) {
-        console.error('Vært ikke fundet i værtTelefonnumre:', beskedData.eventInfo.host);
-        throw new Error(`Vært '${beskedData.eventInfo.host}' ikke fundet`);
-    }
-    
-    // Gem tracking FØRST - normaliser telefonnumre og gem i flere formater
-    const normaliseretVærtTlf = værtTlf.replace(/\s/g, '').replace(/^00/, '+');
-    const normaliseretSenderPhone = beskedData.senderPhone.replace(/\s/g, '').replace(/^00/, '+');
-    const rensetVærtTlf = normaliseretVærtTlf.replace(/[^\d+]/g, '');
-    
-    // Gem i flere formater for at være sikker på at finde det igen
-    // Gem begge retninger fra starten så de kan kommunikere hele tiden
-    aktiveBeskeder[normaliseretVærtTlf] = normaliseretSenderPhone;
-    aktiveBeskeder[rensetVærtTlf] = normaliseretSenderPhone;
-    aktiveBeskeder[værtTlf] = normaliseretSenderPhone;
-    
-    // Gem også den modsatte retning så begge kan svare med det samme
-    aktiveBeskeder[normaliseretSenderPhone] = normaliseretVærtTlf;
-    aktiveBeskeder[normaliseretSenderPhone.replace(/[^\d+]/g, '')] = normaliseretVærtTlf;
-    
-    console.log('✅ Tracking gemt FØR SMS sendes:', { 
-        værtTlf: normaliseretVærtTlf, 
-        rensetVærtTlf: rensetVærtTlf,
-        senderPhone: normaliseretSenderPhone,
-        alleNøgler: Object.keys(aktiveBeskeder),
-        antalNøgler: Object.keys(aktiveBeskeder).length,
-        fuldAktiveBeskeder: JSON.stringify(aktiveBeskeder, null, 2)
-    });
+    // Gem tracking - begge retninger så de kan kommunikere
+    // Vært B's nummer -> Vært A's nummer (så Vært B kan finde Vært A når de svarer)
+    aktiveBeskeder[værtTlf] = beskedData.senderPhone;
+    // Vært A's nummer -> Vært B's nummer (så Vært A kan finde Vært B når de svarer)
+    aktiveBeskeder[beskedData.senderPhone] = værtTlf;
     
     // Gem til fil så det overlever server genstart
     gemAktiveBeskeder();
     
-    // Send SMS til vært
+    // Send SMS til Vært B ******************** 
     const smsBesked = `Ny kollab-anmodning!
 
 Fra: ${beskedData.senderName}
-Tlf: ${beskedData.senderPhone}
 Event: ${beskedData.eventInfo.title}
 
 Besked:
 ${beskedData.messageText}
-
 Svar på denne SMS for at kontakte ${beskedData.senderName}.
-
 - Understory`.trim();
     
-    console.log('Forsøger at sende SMS til vært:', { from: twilioPhoneNumber, to: værtTlf });
-    let message;
-    try {
-        message = await client.messages.create({
-            body: smsBesked,
-            from: twilioPhoneNumber,
-            to: værtTlf
-        });
-        console.log('SMS sendt til vært succesfuldt:', message.sid);
-    } catch (error) {
-        console.error('Twilio fejl ved afsendelse til vært:', error.message);
-        console.error('Twilio fejl detaljer:', error);
-        throw new Error(`Twilio fejl ved afsendelse til vært: ${error.message}`);
-    }
+    // Send SMS til vært ************* Vært B *************
+    const message = await client.messages.create({
+        body: smsBesked,
+        from: twilioPhoneNumber,
+        to: værtTlf
+    });
     
     // Send bekræftelse til afsender
     const bekræftelsesBesked = `Din kollab-anmodning er sendt!
-
 Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 "${beskedData.eventInfo.title}"
 
 - Understory`;
     
-    console.log('Forsøger at sende bekræftelse til afsender:', { from: twilioPhoneNumber, to: beskedData.senderPhone });
-    try {
-        await client.messages.create({
-            body: bekræftelsesBesked,
-            from: twilioPhoneNumber,
-            to: beskedData.senderPhone
-        });
-        console.log('Bekræftelse sendt til afsender succesfuldt');
-    } catch (error) {
-        console.error('Twilio fejl ved bekræftelse til afsender:', error.message);
-        console.error('Twilio fejl detaljer:', error);
-        throw new Error(`Twilio fejl ved bekræftelse til afsender: ${error.message}`);
-    }
+    await client.messages.create({
+        body: bekræftelsesBesked,
+        from: twilioPhoneNumber,
+        to: beskedData.senderPhone
+    });
     
     return { 
         success: true,
@@ -191,77 +116,33 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
     };
 }
 
+
+// funktionen: Vært B svarer på SMS, kalder denne funktion, den videresender beskeden til vært A 
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
-    console.log('håndterIndkommendeSMS kaldt med:', { fraNummer, tilNummer, beskedTekst });
-    console.log('aktiveBeskeder:', aktiveBeskeder);
-    console.log('Antal aktive beskeder:', Object.keys(aktiveBeskeder).length);
-    
-    if (Object.keys(aktiveBeskeder).length === 0) {
-        console.error('⚠️ ADVARSEL: aktiveBeskeder er tom! Dette kan betyde:');
-        console.error('   1. Serveren er blevet genstartet efter besked blev sendt');
-        console.error('   2. Tracking blev aldrig gemt da besked blev sendt');
-        console.error('   3. Beskeden blev sendt før tracking blev gemt');
-    }
-    
+    // ekstra tjek om twilio er sat op
     if (!client) {
-        console.error('Twilio client er ikke oprettet');
         return;
     }
-    
-    // Normaliser telefonnummer (fjern mellemrum og sikre + format)
-    const normaliseretFraNummer = fraNummer.replace(/\s/g, '').replace(/^00/, '+');
-    // Fjern også eventuelle bindestreger eller andre tegn
-    const rensetFraNummer = normaliseretFraNummer.replace(/[^\d+]/g, '');
-    console.log('Normaliseret fraNummer:', normaliseretFraNummer);
-    console.log('Renset fraNummer:', rensetFraNummer);
-    
-    // Find afsender telefon - prøv alle mulige formater
-    const afsenderTelefon = aktiveBeskeder[fraNummer] 
-        || aktiveBeskeder[normaliseretFraNummer] 
-        || aktiveBeskeder[rensetFraNummer]
-        || aktiveBeskeder[fraNummer.replace(/\s/g, '')];
-    console.log('afsenderTelefon fundet:', afsenderTelefon);
-    
-    if (afsenderTelefon) {
-        console.log('Forsøger at videresende besked til:', afsenderTelefon);
-        try {
-            const result = await client.messages.create({
-                body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
-                from: twilioPhoneNumber,
-                to: afsenderTelefon
-            });
-            console.log('Besked videresendt succesfuldt til:', afsenderTelefon);
-            console.log('Twilio Message SID:', result.sid);
-            console.log('Twilio Status:', result.status);
-            console.log('Twilio Error Code:', result.errorCode);
-            console.log('Twilio Error Message:', result.errorMessage);
-            
-            // Gem også den modsatte retning så begge kan svare til hinanden
-            const normaliseretAfsender = afsenderTelefon.replace(/\s/g, '').replace(/^00/, '+');
-            const rensetAfsender = normaliseretAfsender.replace(/[^\d+]/g, '');
-            
-            aktiveBeskeder[normaliseretAfsender] = normaliseretFraNummer;
-            aktiveBeskeder[rensetAfsender] = normaliseretFraNummer;
-            aktiveBeskeder[afsenderTelefon] = normaliseretFraNummer;
-            
-            // Gem til fil så det overlever server genstart
-            gemAktiveBeskeder();
-            
-            console.log('Modsat retning gemt:', { 
-                fra: normaliseretAfsender, 
-                til: normaliseretFraNummer,
-                aktiveBeskeder: Object.keys(aktiveBeskeder)
-            });
-        } catch (error) {
-            console.error('Fejl ved videresendelse af besked:', error.message);
-            console.error('Fejl kode:', error.code);
-            console.error('Fejl status:', error.status);
-            console.error('Fuld fejl:', JSON.stringify(error, null, 2));
-            throw error;
-        }
-    } else {
-        console.error('Ingen afsender telefon fundet for:', fraNummer);
-        console.error('Tilgængelige nøgler i aktiveBeskeder:', Object.keys(aktiveBeskeder));
+    // fraNummer = Vært B (den der lige har sendt beskeden)
+    // Find Vært A's telefonnummer (den der skal modtage beskeden)
+    // husk dette er en objekt dvs:
+    //Objektet viser alle aktive samtaler. Hver nøgle er et telefonnummer,
+    //  og værdien er det nummer, de kan kommunikere med.
+    const værtATelefon = aktiveBeskeder[fraNummer];
+
+    if (værtATelefon) { // hvis Vært A's telefonnummer findes, send beskeden videre
+        // Send besked videre til Vært A
+        await client.messages.create({
+            body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
+            from: twilioPhoneNumber,
+            to: værtATelefon // send beskeden til Vært A
+        });
+        
+        // Gem modsat retning så begge kan svare til hinanden
+        aktiveBeskeder[værtATelefon] = fraNummer;
+        
+        // Gem til fil så det overlever server genstart
+        gemAktiveBeskeder();
     }
 }
 

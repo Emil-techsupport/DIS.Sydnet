@@ -7,19 +7,16 @@ async function twilioWebhook(req, res) {
     try {
         // Hent data fra Twilio
         const { From, To, Body } = req.body;
-        console.log('Webhook modtaget fra Twilio:', { From, To, Body });
         
         // Håndter den indkommende SMS
         await håndterIndkommendeSMS(From, To, Body);
-        
-        // Send svar tilbage til Twilio
-        res.set('Content-Type', 'text/xml');
-        res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
     } catch (error) {
         console.error('Fejl i twilioWebhook:', error);
-        res.set('Content-Type', 'text/xml');
-        res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
     }
+    // Send svar tilbage til Twilio (altid - uanset om der var fejl eller ej) bare for at sikre at twilio modtager et svar
+    // OBS: Vi sender XML fordi det er det Twilio forstår
+    res.set('Content-Type', 'text/xml'); 
+    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);// vi sender nogett tomt fordi dette er bare en skriring 
 };
 // her exporterer vi funktionen så den kan bruges i andre filer bruger i app.js filen
 module.exports = {

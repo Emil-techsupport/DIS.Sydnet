@@ -77,91 +77,48 @@
   </div>
 
   <script>
-    // Hent bruger info og vis i sidebar
-    async function loadUserInfo() {
-      try {
-        const response = await fetch('/api/auth/me');
-        const result = await response.json();
-        
-        if (result.success) {
-          console.log('✅ Bruger er logget ind:', result.host.navn);
-          const userNameElement = document.getElementById('user-name');
-          if (userNameElement) {
-            userNameElement.textContent = result.host.navn;
-          }
-        } else {
-          console.log('❌ Bruger er ikke logget ind - redirecter til login');
-          window.location.href = '/';
-        }
-      } catch (error) {
-        console.log('❌ Fejl ved tjek af login - redirecter til login');
+   // log ud funktion
+    async function logout() {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST'
+      });
+      const result = await response.json();
+      
+      if (result.success) {
         window.location.href = '/';
       }
     }
-    
-    // Logout funktion
-    async function logout() {
-      try {
-        console.log('🔄 Logger ud...');
-        const response = await fetch('/api/auth/logout', {
-          method: 'POST'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-          console.log('✅ Logout succesfuldt! Cookies er slettet på serveren');
-          window.location.href = '/';
-        }
-      } catch (error) {
-        console.error('Fejl ved logout:', error);
-      }
-    }
-    
+      
     // Event listener for logout knap og load events
     document.addEventListener('DOMContentLoaded', function() {
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+      const logoutKnap = document.getElementById('logout-btn');
+      if (logoutKnap) {
+        logoutKnap.addEventListener('click', logout); // kalder på funktionen
       }
       loadUserInfo();
       loadEvents();
     });
     
-    // Hent events fra API når siden loader
+    // hvis bruger er loget ind, hent events fra Anna eller Tim
     async function loadEvents() {
       const container = document.getElementById('events-container');
-      const loadingMessage = document.getElementById('loading-message');
       
-      try {
-        // Hent logget ind vært's events (fra cookie)
-        // Først tjek om bruger er logget ind
-        const authResponse = await fetch('/api/auth/me');
-        const authResult = await authResponse.json();
-        
-        if (!authResult.success) {
-          // Hvis ikke logget ind, redirect til login
-          window.location.href = '/';
-          return;
-        }
-        
-        const loggedInHost = authResult.host.navn;
-        const response = await fetch('/services/hostEvents?host=' + loggedInHost);
-        const hostDataClient = await response.json();
-        console.log("************HostDataClient********");
-        console.log(hostDataClient);
-        //console.log("************HostDataClient.events********");
-        //console.log(hostDataClient.data);
-        
-        if (hostDataClient.success && hostDataClient.data) {
-          // Vis alle events fra alle værter
-          displayEvents(hostDataClient.data);
-        
-        } else {
-          container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Kunne ikke hente oplevelser: ' + (hostDataClient.error || 'Ukendt fejl') + '</div>';
-        }
-      } catch (error) {
-        if (loadingMessage) loadingMessage.remove();
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Der opstod en fejl ved hentning af data: ' + error.message + '</div>';
+      // Tjek om bruger er logget ind
+      const authResponse = await fetch('/api/auth/me');
+      const authResult = await authResponse.json();
+      
+      if (!authResult.success) {
+        window.location.href = '/';
+        return;
+      }
+      
+      // Hent events for den logget ind vært
+      const loggedInHost = authResult.host.navn;
+      const response = await fetch('/services/hostEvents?host=' + loggedInHost);
+      const hostDataClient = await response.json();
+      
+      if (hostDataClient.success && hostDataClient.data) {
+        displayEvents(hostDataClient.data);
       }
     }
 

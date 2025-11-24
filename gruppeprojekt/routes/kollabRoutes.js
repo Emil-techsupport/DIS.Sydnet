@@ -8,11 +8,7 @@ router.post('/send-sms', smsController.sendKollabSMS);
 
 // POST /api/kollab/webhook - Twilio webhook for indkommende SMS (når vært B svarer)
 router.post('/webhook', (req, res, next) => {
-    console.log('=== WEBHOOK REQUEST MODTAGET ===');
-    console.log('Method:', req.method);
-    console.log('URL:', req.url);
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
+    
     next();
 }, webhookController.twilioWebhook);
 
