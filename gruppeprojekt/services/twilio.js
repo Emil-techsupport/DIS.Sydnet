@@ -41,7 +41,7 @@ function gemAktiveBeskeder() {
     fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
- /*Indlæs aktive beskeder fra fil ***************CHAT HJÆLPER FUNKTION ***************
+ //Indlæs aktive beskeder fra fil ***************CHAT HJÆLPER FUNKTION ***************
 function indlæsAktiveBeskeder() {
     try {
         if (fs.existsSync(aktiveBeskederFil)) {
@@ -57,10 +57,10 @@ function indlæsAktiveBeskeder() {
         aktiveBeskeder = {};
     }
 }
-*/
+
 
 // Indlæs data når modulet starter
-//indlæsAktiveBeskeder();
+indlæsAktiveBeskeder();
 //***************************************************************************************** */
 
 // Send SMS til vært og bekræftelse til afsender
