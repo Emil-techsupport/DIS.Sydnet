@@ -16,12 +16,14 @@
       
               <nav>
                 <div class="nav-section">
-                    <span><a href="/" style="text-decoration: none; color: inherit;">Hjem</a></span>
+                    <div class="nav-item">
+                        <span><a href="/forside" style="text-decoration: none; color: inherit;">Hjem</a></span>
+                    </div>
                   <div class="nav-item">
                     <span>Kalender</span>
                   </div>
                   <div class="nav-item">
-                    <span><a href="/oplevelser" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
+                    <span><a href="/forside" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
                  </div>
                  <div class="nav-item">
                     <span><a href="/search" style="text-decoration: none; color: inherit;">Søg</a></span>
@@ -36,6 +38,12 @@
                   <div class="nav-item">
                     <span>Grow</span>
                   </div>
+                </div>
+                <div class="nav-item-group-title" style="margin-top: 32px;">Konto</div>
+                <div class="nav-section">
+                    <div class="nav-item" style="cursor: pointer;" id="logout-btn">
+                    <span>Log ud</span>
+                    </div>
                 </div>
               </nav>
             </div>
@@ -383,6 +391,31 @@
 
         // Start når siden er loadet
         window.addEventListener('DOMContentLoaded', initialiserSide);
+
+        // Logout funktion
+        async function logout() {
+        try {
+            const response = await fetch('/api/auth/logout', {
+            method: 'POST'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+            window.location.href = '/';
+            }
+        } catch (error) {
+            console.error('Fejl ved logout:', error);
+        }
+        }
+        
+        // Load events når siden loader
+        window.addEventListener('DOMContentLoaded', function() {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', logout);
+        }
+        loadAllEvents();
+    });
     </script>
 
     

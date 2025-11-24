@@ -23,7 +23,7 @@
               <span>Kalender</span>
             </div>
             <div class="nav-item">
-              <span><a href="/oplevelser" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
+              <span><a href="/forside" style="text-decoration: none; color: inherit;">Oplevelser</a></span>
             </div>
             <div class="nav-item active">
               <span>Søg</span>
@@ -45,9 +45,6 @@
           
           <div class="nav-item-group-title" style="margin-top: 32px;">Konto</div>
           <div class="nav-section">
-            <div class="nav-item">
-              <span id="user-name">Indlæser...</span>
-            </div>
             <div class="nav-item" style="cursor: pointer;" id="logout-btn">
               <span>Log ud</span>
             </div>
@@ -297,25 +294,6 @@
     // når brugeren vælger en lokation, søger vi efter events
     document.getElementById('location-filter').addEventListener('change', searchEvents);
     
-    // Hent bruger info
-    async function loadUserInfo() {
-      try {
-        const response = await fetch('/api/auth/me');
-        const result = await response.json();
-        
-        if (result.success) {
-          const userNameElement = document.getElementById('user-name');
-          if (userNameElement) {
-            userNameElement.textContent = result.host.navn;
-          }
-        } else {
-          window.location.href = '/';
-        }
-      } catch (error) {
-        window.location.href = '/';
-      }
-    }
-    
     // Logout funktion
     async function logout() {
       try {
@@ -338,7 +316,6 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
       }
-      loadUserInfo();
       loadAllEvents();
     });
   </script>

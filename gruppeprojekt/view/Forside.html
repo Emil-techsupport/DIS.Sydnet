@@ -44,9 +44,6 @@
           
           <div class="nav-item-group-title" style="margin-top: 32px;">Konto</div>
           <div class="nav-section">
-            <div class="nav-item">
-              <span id="user-name">Indlæser...</span>
-            </div>
             <div class="nav-item" style="cursor: pointer;" id="logout-btn">
               <span>Log ud</span>
             </div>
@@ -59,7 +56,6 @@
     <main class="main">
       <div class="main-header">
         <h1 class="title">Oplevelser</h1>
-        <!-- eneste interaktive element -->
         <button class="primary-btn" id="oplevelserknap">+ Oplevelse</button>
       </div>
 
@@ -95,7 +91,7 @@
       if (logoutKnap) {
         logoutKnap.addEventListener('click', logout); // kalder på funktionen
       }
-      loadUserInfo();
+      //loadUserInfo();
       loadEvents();
     });
     
