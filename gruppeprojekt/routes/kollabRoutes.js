@@ -7,6 +7,9 @@ const webhookController = require('../controllers/webhookController');
 router.post('/send-sms', smsController.sendKollabSMS);
 
 // POST /api/kollab/webhook - Twilio webhook for indkommende SMS (når vært B svarer)
-router.post('/webhook', webhookController.twilioWebhook);
+router.post('/webhook', (req, res, next) => {
+    
+    next();
+}, webhookController.twilioWebhook);
 
 module.exports = router;

@@ -11,77 +11,55 @@ const {getEventsByHostName} = require('../data/mockEvents');
 //Gør det muligt at cache responses
 const cache = require('./caching');
 
-/*
-//Henter events fra alle hosts via proxy
-//Tilføjer cache og RTT målinger
-async function fetchEventsFromHost() {
-  try {
-    // Cache key til at identificere cached data
-    const cacheKey = 'vearter_data';
-    
-    // Tjek om data allerede er i cache
-    // Hvis cache findes og ikke er udløbet, returner cached data
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      //console.log("********Returner cached data"); 
-      return cachedData;
-    }
+//Henter events ud fra host og tilføjer RTT
+async function proxyRequest(host) {
+  const start = Date.now();
+  const alleEvents = getEventsByHostName(host.navn);
+  const rtt = Date.now() - start;
+  console.log(`${host.navn} - RTT: ${rtt}ms`);
   
-    // Hvis det ikke ligger i cashen, så hent data'en igen
-    console.log('Cache miss - fetching from APIs');
-*/
-     //Henter events ud fra host og tilføjer RTT
-    async function proxyRequest(host) {
-      // Gemmer starttidspunktet for senere at kunne måle round trip timen
-      const start = Date.now();
-
-      //console.log("******Start tidspunkt(nu)******")
-      //console.log(start);
-      
-      //Er der behov for det her?:
-      //await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100)); // Simulerer netværksforsinkelse
-      
-      // Henter alle events baseret på host navn
-      const alleEvents = getEventsByHostName(host.navn);
-      
-      //console.log("********alleEvents*********");
-      //console.log(alleEvents);
-
-      // Beregner RTT ved at trække starttid fra nuværende tid
-      const rtt = Date.now() - start;
-      
-      // Logger RTT til konsollen. Skriver hostnavn og given round trip time
-      console.log(`${host.navn} - RTT: ${rtt}ms`);
-      
-      // Returnerer objekt med info om host, samt alle events for den givne host, samt RTT for processen.
-      return {
-        navn: host.navn,       
-        URL: host.apiUrl,           
-        lokation: host.lokation,        
-        ID: host.værtID,          
-        rtt,                      
-        events: alleEvents || null   
-      };
+  return {
+    navn: host.navn,       
+    URL: host.apiUrl,           
+    lokation: host.lokation,        
+    ID: host.værtID,          
+    rtt,                      
+    events: alleEvents || null   
+  };
 }
 /*
     let host = getAllHosts();
     let annahost = host[0]
 
-    //console.log(annahost);
-    //console.log("******Getallhosts[0]******");
-    //console.log(annahost);
-    //console.log(annahost.navn);
-
-    //Gemmer svaret fra proxyRequest funktionen, med Anna som den givne host
-    hostOgEventInfo = await proxyRequest(annahost);
-  
-    // Gem resultater i cachen i 60 sekunder
-    cache.set(cacheKey, hostOgEventInfo, 60000);
-    // Hvis ikke i cache, hent data fra API'er
-    console.log('Cache miss - fetching from APIs'); // Logger at data hentes
+/**
+ * Hovedfunktion: Henter events/data fra alle aktive værter via proxy
+ * Array med data fra alle værter inkl. RTT målinger
+ */
+async function fetchEventsFromHosts() {
+  try {
+    // Cache key til at identificere cached data
+    const cacheKey = 'vearter_data';
     
-    //Returnerer info om host, alle events for den givne host, samt RTT for processen. Og alt dette er gemt i cachen
-    return hostOgEventInfo;
+    // Tjek om data allerede er i cache
+    // Hvis cache findes og ikke er udløbet, returner cached data (hurtigere!)
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      console.log('Returning data from cache');
+      return cachedData;
+    }
+    
+    const hosts = getAllHosts();
+    const results = [];
+    
+    for (let i = 0; i < hosts.length; i++) {
+      const result = await proxyRequest(hosts[i]);
+      results.push(result);
+    }
+    
+    cache.set(cacheKey, results, 60000);
+    console.log('Data cached for 60 seconds');
+    
+    return results;
     
   } catch (error) {
     // Hvis noget går galt logger vi fejlen
@@ -90,22 +68,21 @@ async function fetchEventsFromHost() {
     //Kaster en ny fejl som sender HTTP response til klienten
     throw new Error("Kunne ikke hente data fra værter");
   }
-}
-*/
+} 
+
 /**
  * Henter events for en specifik vært (kan bruges til alle hosts)
  *  Navnet på værten hvis events skal hentes
  */
 async function fetchHostEvents(hostNavn) {
   try {
-    // Cache key baseret på host navn
     const cacheKey = `host_events_${hostNavn.toLowerCase()}`;
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
       console.log(`Returning ${hostNavn} events from cache`);
       return cachedData;
     }
-    // Find host i databasen
+    
     const hosts = getAllHosts();
     let host = null;
     

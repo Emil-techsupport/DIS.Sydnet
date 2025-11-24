@@ -34,7 +34,6 @@ const { sendSMSTilVært } = require('../services/twilio');
         });
         
     } catch (error) {
-        console.error('Fejl:', error); // dette er kun til debugging ofc :))
         res.status(500).json({
             success: false,
             message: 'Kunne ikke sende SMS',
