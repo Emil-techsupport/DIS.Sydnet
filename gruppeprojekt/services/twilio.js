@@ -48,9 +48,17 @@ function gemAktiveBeskeder() {
             fs.mkdirSync(dataDir, { recursive: true });
             console.log('📁 Data mappe oprettet:', dataDir);
         }
-        fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
-        console.log('✅ aktiveBeskeder gemt til fil:', aktiveBeskederFil);
-        console.log('📊 Indhold:', JSON.stringify(aktiveBeskeder, null, 2));
+        
+        // Gem til fil synkront for at sikre det sker med det samme
+        const data = JSON.stringify(aktiveBeskeder, null, 2);
+        fs.writeFileSync(aktiveBeskederFil, data, 'utf8');
+        
+        // Verificer at filen faktisk blev skrevet
+        if (fs.existsSync(aktiveBeskederFil)) {
+            console.log('✅ aktiveBeskeder gemt til fil:', aktiveBeskederFil);
+        } else {
+            console.error('❌ Fil blev ikke oprettet:', aktiveBeskederFil);
+        }
     } catch (error) {
         console.error('❌ Fejl ved at gemme aktiveBeskeder:', error.message);
         console.error('Fejl detaljer:', error);
@@ -75,6 +83,13 @@ function indlæsAktiveBeskeder() {
         console.error('Fejl detaljer:', error);
         aktiveBeskeder = {};
     }
+}
+
+// Sørg for at data mappen eksisterer når modulet starter
+const dataDir = path.dirname(aktiveBeskederFil);
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log('📁 Data mappe oprettet ved start:', dataDir);
 }
 
 // Indlæs data når modulet starter
