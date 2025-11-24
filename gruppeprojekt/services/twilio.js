@@ -42,6 +42,7 @@ function gemAktiveBeskeder() {
 }
 
  //Indlæs aktive beskeder fra fil ***************CHAT HJÆLPER FUNKTION ***************
+ /*
 function indlæsAktiveBeskeder() {
     try {
         if (fs.existsSync(aktiveBeskederFil)) {
@@ -61,6 +62,7 @@ function indlæsAktiveBeskeder() {
 
 // Indlæs data når modulet starter
 indlæsAktiveBeskeder();
+*/
 //***************************************************************************************** */
 
 // Send SMS til vært og bekræftelse til afsender
