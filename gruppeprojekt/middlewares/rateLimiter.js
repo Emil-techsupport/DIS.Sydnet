@@ -11,3 +11,4 @@ module.exports = {
     twilioRateLimiter
 };
 
+// OBS hvis du vil teste om dette virker brug postman til at sende requests til localhost:3000/api/kollab/webhook.
