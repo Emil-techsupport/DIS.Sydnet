@@ -120,6 +120,7 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 
 
 // funktionen: Vært B svarer på SMS, kalder denne funktion, den videresender beskeden til vært A 
+// bliver kaldt af 
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     // ekstra tjek om twilio er sat op
     if (!client) {

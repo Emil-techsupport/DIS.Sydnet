@@ -103,6 +103,13 @@
   </div>
 
   <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const clickedEventId = urlParams.get("eventID");
+    console.log(clickedEventId);
+
+
+
     let allEvents = []; // Gemmer alle events
     
     // Hent alle events når siden loader

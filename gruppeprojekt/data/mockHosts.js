@@ -67,6 +67,3 @@ module.exports = {
   findHostMedEmailOgPassword
 };
 
-// TEST: 
-//const result = getAllHosts();
-//console.log(result);
