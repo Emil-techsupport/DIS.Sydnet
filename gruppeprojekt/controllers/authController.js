@@ -11,9 +11,11 @@ const verifyAsync = util.promisify(jwt.verify);
 
 // Cookie indstillinger (samme overalt)
 const cookieOptions = {
-  httpOnly: true,
+  httpOnly: true, // kun tilgængelig for HTTP requests
   secure: true, // Altid true for HTTPS (produktion)
-  sameSite: 'lax'
+  sameSite: 'lax'  // sikrer at cookies ikke sendes til andre websites
+
+
 };
 
 // Login - når bruger logger ind
@@ -52,6 +54,15 @@ async function login(req, res) {
     issuer: 'understory-app' 
   };
   
+  // Tjek om SECRET er sat (vigtigt for produktion)
+  if (!SECRET) {
+    console.error('❌ FEJL: SECRET ikke fundet i .env filen!');
+    return res.status(500).json({
+      success: false,
+      message: 'Server konfigurationsfejl: SECRET mangler'
+    });
+  }
+  
   try {
     // vi kryptere vores token så man ikke kan læse det fordi der er jo bruger informationer i det og sikrer at det er autentisk
     const token = await signAsync(payload, SECRET, signOptions);
@@ -72,10 +83,12 @@ async function login(req, res) {
       }
     });
   } catch (error) {
-    console.error('Fejl ved oprettelse af JWT token:', error);
+    console.error('❌ Fejl ved oprettelse af JWT token:', error.message);
+    console.error('Error details:', error);
     return res.status(500).json({
       success: false,
-      message: 'Fejl ved login'
+      message: 'Fejl ved login',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 }
