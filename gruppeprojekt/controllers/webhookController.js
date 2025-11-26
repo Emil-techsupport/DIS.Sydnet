@@ -15,8 +15,8 @@ async function twilioWebhook(req, res) {
     }
     // Send svar tilbage til Twilio (altid - uanset om der var fejl eller ej) bare for at sikre at twilio modtager et svar
     // OBS: Vi sender XML fordi det er det Twilio forstår
-    res.set('Content-Type', 'text/xml'); 
-    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);// vi sender nogett tomt fordi dette er bare en skriring 
+    // res.set('Content-Type', 'text/xml'); 
+  //  res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);// vi sender nogett tomt fordi dette er bare en skriring 
 };
 // her exporterer vi funktionen så den kan bruges i andre filer bruger i app.js filen
 module.exports = {

@@ -92,8 +92,8 @@
         </div>
 
         <h2 class="samarbejde-titel">Find andre events at samarbejde med her!</h2>
-        <div class="samarbejde-text">Vil du finde andre events at samarbejde med? Så er det denne vej:</div>
-        <button class="samarbejde" id="samarbejdeKnap">Find samarbejdespartnere</button>
+        <div class="samarbejde-text">Vil du finde andre events at samarbejde med i forhold til dette event? Så er det denne vej:</div>
+        <button class="samarbejde" id="samarbejdeKnap">Find en samarbejdespartner</button>
           </button>
       </section>
     </main>
@@ -241,6 +241,16 @@
       }
     }
     inputEventInfo();
+
+
+    // Når man klikker på "Find samarbejdespartner" knappen
+    document.getElementById("samarbejdeKnap").addEventListener('click', function() {
+
+      window.location.href = "/search?eventID=" + clickedEventId;
+        // Gå til kollab-siden
+        //window.location.href = "/search";
+    });
+
   </script>
 </body>
 </html>

@@ -49,3 +49,5 @@ module.exports = {
   findHostByCredentials
 };
 
+//let resultat = getHostById(2);
+//console.log(resultat)
