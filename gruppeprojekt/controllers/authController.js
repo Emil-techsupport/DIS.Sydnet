@@ -9,15 +9,6 @@ const SECRET = process.env.SECRET;
 const signAsync = util.promisify(jwt.sign);
 const verifyAsync = util.promisify(jwt.verify);
 
-// Cookie indstillinger (samme overalt)
-const cookieOptions = {
-  httpOnly: true, // kun tilgængelig for HTTP requests
-  secure: true, // Altid true for HTTPS (produktion)
-  sameSite: 'lax'  // sikrer at cookies ikke sendes til andre websites
-
-
-};
-
 // Login - når bruger logger ind
 async function login(req, res) {
   const { email, password } = req.body;
@@ -54,23 +45,14 @@ async function login(req, res) {
     issuer: 'understory-app' 
   };
   
-  // Tjek om SECRET er sat (vigtigt for produktion)
-  if (!SECRET) {
-    console.error('❌ FEJL: SECRET ikke fundet i .env filen!');
-    return res.status(500).json({
-      success: false,
-      message: 'Server konfigurationsfejl: SECRET mangler'
-    });
-  }
-  
   try {
     // vi kryptere vores token så man ikke kan læse det fordi der er jo bruger informationer i det og sikrer at det er autentisk
     const token = await signAsync(payload, SECRET, signOptions);
     
-    // Gem JWT token i HTTP-only cookie
+    // Gem JWT token i HTTP-only cookie med max age 1 time
     res.cookie('jwt', token, {
-      maxAge: 86400000, // 24 timer
-      ...cookieOptions
+      maxAge: 86400000, // 1 time 
+      httpOnly: true
     });
     
     // Send svar tilbage
@@ -83,12 +65,10 @@ async function login(req, res) {
       }
     });
   } catch (error) {
-    console.error('❌ Fejl ved oprettelse af JWT token:', error.message);
-    console.error('Error details:', error);
+    console.error('Fejl ved oprettelse af JWT token:', error);
     return res.status(500).json({
       success: false,
-      message: 'Fejl ved login',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Fejl ved login'
     });
   }
 }
@@ -96,7 +76,7 @@ async function login(req, res) {
 // Logout - når bruger logger ud
 function logout(req, res) {
   // Slet JWT cookie
-  res.clearCookie('jwt', cookieOptions);
+  res.clearCookie('jwt');
   
   res.json({
     success: true,
@@ -127,7 +107,7 @@ async function checkAuth(req, res, next) {
     
     // Hvis vært ikke findes, slet cookie og redirect
     if (!host) {
-      res.clearCookie('jwt', cookieOptions);
+      res.clearCookie('jwt');
       return res.redirect('/login');
     }
     
@@ -136,7 +116,7 @@ async function checkAuth(req, res, next) {
     next(); // Fortæller at vi kan fortsætte med requesten
   } catch (error) {
     // Token er ugyldig eller udløbet
-    res.clearCookie('jwt', cookieOptions);
+    res.clearCookie('jwt');
     return res.redirect('/login');
   }
 }
