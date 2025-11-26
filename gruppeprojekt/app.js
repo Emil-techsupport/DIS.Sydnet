@@ -34,7 +34,16 @@ app.use(logger('dev')); // middleware der logger requesten arbejder med morgan
 app.use(express.json()); // middleware der håndterer JSON data
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // middleware der håndterer cookies
-app.use(helmet()); // sikkerheds middleware der beskytter mod forskellige sikkerhedsangreber
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      // UDEN DETTE MÅ VI IKKE LOGGE IN DA HELMET BLOCKER INLINE SCRIPTS OG HASHING 
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Tillad inline scripts
+      styleSrc: ["'self'", "'unsafe-inline'"], // Tillad inline styles
+    },
+  },
+})); // sikkerheds middleware der beskytter mod forskellige sikkerhedsangreber
 
 // Static files skal komme FØR routeren, så CSS/JS filer bliver serveret korrekt
 app.use(express.static(path.join(__dirname, 'public')));

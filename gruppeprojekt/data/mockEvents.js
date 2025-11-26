@@ -147,3 +147,7 @@ module.exports = {
   getEventsByHostName
 };
 
+// TEST funktionen getEventsByHostName
+ // getEventsByHostName("Anna");
+
+

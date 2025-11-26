@@ -1,6 +1,13 @@
 // Controller til login/logout
+const jwt = require('jsonwebtoken');
+const util = require('util');
+require('dotenv').config();
 
-const { findHostByCredentials, getHostById } = require('../data/mockHosts');
+const { findHostMedEmailOgPassword, getHostById } = require('../data/mockHosts');
+
+const SECRET = process.env.SECRET;
+const signAsync = util.promisify(jwt.sign);
+const verifyAsync = util.promisify(jwt.verify);
 
 // Login - når bruger logger ind
 async function login(req, res) {
@@ -14,8 +21,8 @@ async function login(req, res) {
     });
   }
   
-  // Find vært med email og password
-  const host = findHostByCredentials(email, password);
+  // Find vært med email og password ved brug af hashing funktionen fra mockHosts.js
+  const host = await findHostMedEmailOgPassword(email, password);
   
   if (!host) {
     return res.status(401).json({
@@ -24,41 +31,52 @@ async function login(req, res) {
     });
   }
   
-  // Gem vært ID i cookie
-  res.cookie('loggedInHostId', host.værtID, {
-    maxAge: 86400000, // 1 dag idk om det er nok 
-    httpOnly: true // dette sikrer at cookie ikke kan acesses af javascript
-  });
+  // Opret JWT token med vært information med brugerens informationer
+  const payload = {
+    sub: `host:${host.værtID}`,
+    navn: host.navn,
+    email: host.email,
+    værtID: host.værtID
+  };
+  // Opret indstillinger for token
+  const signOptions = {
+    algorithm: 'HS256', // samme nøgle til signere og verificere
+    expiresIn: '1h', // 1 time
+    issuer: 'understory-app' 
+  };
   
-  // Gem vært navn i cookie
-  res.cookie('loggedInHostName', host.navn, {
-    maxAge: 86400000,
-    httpOnly: true
-  });
-  
-  console.log('Cookie oprettet:', {
-    loggedInHostId: host.værtID,
-    loggedInHostName: host.navn
-  });
-  
-  // Send svar tilbage
-  res.json({
-    success: true,
-    message: 'Login succesfuldt',
-    host: {
-      navn: host.navn,
-      email: host.email
-    }
-  });
+  try {
+    // vi kryptere vores token så man ikke kan læse det fordi der er jo bruger informationer i det og sikrer at det er autentisk
+    const token = await signAsync(payload, SECRET, signOptions);
+    
+    // Gem JWT token i HTTP-only cookie med max age 1 time
+    res.cookie('jwt', token, {
+      maxAge: 86400000, // 1 time 
+      httpOnly: true
+    });
+    
+    // Send svar tilbage
+    res.json({
+      success: true,
+      message: 'Login succesfuldt',
+      host: {
+        navn: host.navn,
+        email: host.email
+      }
+    });
+  } catch (error) {
+    console.error('Fejl ved oprettelse af JWT token:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Fejl ved login'
+    });
+  }
 }
 
 // Logout - når bruger logger ud
 function logout(req, res) {
-  // Slet cookies
-  res.clearCookie('loggedInHostId');
-  res.clearCookie('loggedInHostName');
-  
-  console.log(' Cookies slettet fordi vi er logget ud');
+  // Slet JWT cookie
+  res.clearCookie('jwt');
   
   res.json({
     success: true,
@@ -66,34 +84,41 @@ function logout(req, res) {
   });
 }
 
-// Tjek om bruger er logget ind
-function checkAuth(req, res, next) {
-  const hostId = req.cookies.loggedInHostId;
+// Middleware til at verificere JWT token fra cookie
+async function checkAuth(req, res, next) {
+  const token = req.cookies.jwt; // Hent token fra cookie
   
-  // Hvis ingen cookie, er bruger ikke logget ind
-  if (!hostId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Ikke logget ind'
-    });
+  // Hvis ingen token, redirect til login side
+  if (!token) {
+    return res.redirect('/login');
   }
   
-  // Find vært fra cookie ID
-  const host = getHostById(parseInt(hostId));
-  
-  // Hvis vært ikke findes, slet cookies
-  if (!host) {
-    res.clearCookie('loggedInHostId');
-    res.clearCookie('loggedInHostName');
-    return res.status(401).json({
-      success: false,
-      message: 'Ugyldig session'
-    });
+  try {
+    // Verificer token altå passer det med vores SECRET for brugeren
+    const decoded = await verifyAsync(token, SECRET);
+
+    // Dette:
+// Tjekker om signaturen er korrekt (bruger samme SECRET)
+// Tjekker om tokenet er udløbet
+//  Returnerer payload hvis alt er OK
+
+    // Find vært fra token fordi vi har værtID i token
+    const host = getHostById(decoded.værtID);
+    
+    // Hvis vært ikke findes, slet cookie og redirect
+    if (!host) {
+      res.clearCookie('jwt');
+      return res.redirect('/login');
+    }
+    
+    // Tilføj vært info til request
+    req.user = host;
+    next(); // Fortæller at vi kan fortsætte med requesten
+  } catch (error) {
+    // Token er ugyldig eller udløbet
+    res.clearCookie('jwt');
+    return res.redirect('/login');
   }
-  
-  // Tilføj vært info til request
-  req.user = host;
-  next();
 }
 
 module.exports = {

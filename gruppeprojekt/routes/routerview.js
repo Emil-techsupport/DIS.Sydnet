@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const path = require("path");
+const { checkAuth } = require('../controllers/authController');
 
 /* GET home page - vis login som standard */
 router.get('/', function(req, res) {
@@ -8,7 +9,7 @@ router.get('/', function(req, res) {
 });
 
 /* GET forside - vis kun hvis logget ind */
-router.get('/forside', function(req, res) {
+router.get('/forside', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/Forside.html'));
 });
 
