@@ -9,6 +9,13 @@ const SECRET = process.env.SECRET;
 const signAsync = util.promisify(jwt.sign);
 const verifyAsync = util.promisify(jwt.verify);
 
+// Cookie indstillinger (samme overalt)
+const cookieOptions = {
+  httpOnly: true,
+  secure: true, // Altid true for HTTPS (produktion)
+  sameSite: 'lax'
+};
+
 // Login - når bruger logger ind
 async function login(req, res) {
   const { email, password } = req.body;
@@ -49,10 +56,10 @@ async function login(req, res) {
     // vi kryptere vores token så man ikke kan læse det fordi der er jo bruger informationer i det og sikrer at det er autentisk
     const token = await signAsync(payload, SECRET, signOptions);
     
-    // Gem JWT token i HTTP-only cookie med max age 1 time
+    // Gem JWT token i HTTP-only cookie
     res.cookie('jwt', token, {
-      maxAge: 86400000, // 1 time 
-      httpOnly: true
+      maxAge: 86400000, // 24 timer
+      ...cookieOptions
     });
     
     // Send svar tilbage
@@ -76,7 +83,7 @@ async function login(req, res) {
 // Logout - når bruger logger ud
 function logout(req, res) {
   // Slet JWT cookie
-  res.clearCookie('jwt');
+  res.clearCookie('jwt', cookieOptions);
   
   res.json({
     success: true,
@@ -107,7 +114,7 @@ async function checkAuth(req, res, next) {
     
     // Hvis vært ikke findes, slet cookie og redirect
     if (!host) {
-      res.clearCookie('jwt');
+      res.clearCookie('jwt', cookieOptions);
       return res.redirect('/login');
     }
     
@@ -116,7 +123,7 @@ async function checkAuth(req, res, next) {
     next(); // Fortæller at vi kan fortsætte med requesten
   } catch (error) {
     // Token er ugyldig eller udløbet
-    res.clearCookie('jwt');
+    res.clearCookie('jwt', cookieOptions);
     return res.redirect('/login');
   }
 }
