@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const helmet = require('helmet');
 var indexRouter = require('./routes/routerview'); 
 
 // importer routerne til service logiken
@@ -28,11 +29,12 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(logger('dev'));
+app.use(logger('dev')); // middleware der logger requesten arbejder med morgan
 // Vigtigt: urlencoded skal være true for Twilio webhooks (de sender form-data)
-app.use(express.json());
+app.use(express.json()); // middleware der håndterer JSON data
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser()); // middleware der håndterer cookies
+app.use(helmet()); // sikkerheds middleware der beskytter mod forskellige sikkerhedsangreber
 
 // Static files skal komme FØR routeren, så CSS/JS filer bliver serveret korrekt
 app.use(express.static(path.join(__dirname, 'public')));
