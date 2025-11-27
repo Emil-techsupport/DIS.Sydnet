@@ -29,23 +29,27 @@ const hosts = [
 
 // Funktion til at finde vært efter email og password
 async function findHostMedEmailOgPassword(email, password) {
-  // Find host med email først
-  const host = hosts.find(host => host.email === email);
-  
-  // Hvis host ikke findes, returner undefined
-  if (!host) {
-    return undefined;
+  // Gennemgå alle hosts og dekrypter email for at sammenligne
+  for (let i = 0; i < hosts.length; i++) {
+    const host = hosts[i];
+    const dekrypteretEmail = decrypt(host.email);
+    
+    // Hvis email matcher, tjek password
+    if (dekrypteretEmail === email) {
+      // Verificer password med bcrypt
+      const erPasswordGood = await bcrypt.compare(password, host.password);
+      
+      // Hvis password matcher, returner host (med dekrypteret telefonNr og email)
+      if (erPasswordGood) {
+        return decryptHostTlfOgMail(host);
+      } else {
+        return undefined; // Password matcher ikke
+      }
+    }
   }
   
-  // Verificer password med bcrypt
-  const isPasswordMatch = await bcrypt.compare(password, host.password);
-  
-  // Hvis password matcher, returner host (med dekrypteret telefonNr og email), ellers undefined
-  if (isPasswordMatch) {
-    return decryptHostTlfOgMail(host);
-  } else {
-    return undefined;
-  }
+  // Hvis ingen host findes med denne email, returner undefined
+  return undefined;
 }
 
 // Helper funktion til at dekryptere telefonNr og email i host objekt

@@ -30,7 +30,7 @@ function encrypt(tekst) {
 // fordi hvis man krypterer samme tekst med samme key og IV vil man få samme output.
   const cipher = crypto.createCipheriv(
     algorithm,
-    Buffer.from(ENCRYPTION_KEY, 'hex'), // Konverter hex string til buffer
+    Buffer.from(ENCRYPTION_KEY, 'hex'), // Konverter hex string til buffer, hex er en string der repræsenterer en hexadecimal værdi altså data
     iv
   );
   
@@ -50,9 +50,9 @@ function encrypt(tekst) {
  */
 function decrypt(krypteretData) {
 
-    // 1. Hent IV og krypteret data
+    // 1. Hent IV og krypteret data. altså vi spliter iv fra selve teksten som er krypteret.
   const dele = krypteretData.split(':');
-  const iv = Buffer.from(dele[0], 'hex'); // Første del er IV
+  const iv = Buffer.from(dele[0], 'hex'); // Første del er IV 
   const krypteretTekst = dele[1]; // Anden del er den krypterede tekst
   
   // Opret decipher med algoritme med samme key og IV
