@@ -1,24 +1,27 @@
 // Mock database for Understory værter (kunder)
 // Simulerer Understory's kunder der tilbyder oplevelser
-
 const bcrypt = require('bcryptjs');
+// Sikre at dotenv er indlæst først
+require('dotenv').config();
+const { encrypt, decrypt } = require('../services/encryption');
 
+// Krypter telefonnumre ved oprettelse (kun én gang)
 const hosts = [
   {
     værtID: 1,
     navn: "Anna",
-    email: "anna@understory.dk",
+    email: encrypt("anna@understory.dk"),
     password: "$2b$10$9bOXFXIjk6qoDXRW63B0NOcRdCPjZaPIzYmZyetPEgAAp.aBENfGG", // hashed password, "anna123"
-    telefonNr: "+4591977138", // Medas nr
+    telefonNr: encrypt("+4591977138"), // Krypteret telefonnummer
     lokation: "København",
     apiUrl: "https://jsonplaceholder.typicode.com/posts" // idk om vi skal bruge det 
   },
   {
     værtID: 2,
     navn: "Tim",
-    email: "tim@understory.dk",
+    email: encrypt("tim@understory.dk"),
     password: "$2b$10$rxMOn2eloHoGyyvquer.2u.8DcjjH1GF9zB7CpPOSF91AgxQKX/Fq", // hashed password, "tim123"
-    telefonNr: "+4591977138", // Medas nr
+    telefonNr: encrypt("+4591977138"), // Krypteret telefonnummer
     lokation: "København",
     apiUrl: "https://jsonplaceholder.typicode.com/users" // idk om vi skal bruge det 
   }
@@ -37,33 +40,70 @@ async function findHostMedEmailOgPassword(email, password) {
   // Verificer password med bcrypt
   const isPasswordMatch = await bcrypt.compare(password, host.password);
   
-  // Hvis password matcher, returner host, ellers undefined
+  // Hvis password matcher, returner host (med dekrypteret telefonNr og email), ellers undefined
   if (isPasswordMatch) {
-    return host;
+    return decryptHostTlfOgMail(host);
   } else {
     return undefined;
   }
 }
 
-// Funktioner til at hente hosts
+// Helper funktion til at dekryptere telefonNr og email i host objekt
+function decryptHostTlfOgMail(host) {
+  if (!host) return host;
+  return {
+    ...host,
+    telefonNr: decrypt(host.telefonNr), // Dekrypter telefonnummer
+    email: decrypt(host.email) // Dekrypter email
+  };
+}
+
+// Funktioner til at hente hosts (dekrypterer telefonNr og email automatisk)
 function getAllHosts() {
-  return hosts;
+  const result = [];
+  for (let i = 0; i < hosts.length; i++) {
+    result.push(decryptHostTlfOgMail(hosts[i])); // Dekrypter telefonnummer og email
+  }
+  return result; // Returnerer alle hosts med dekrypteret telefonNr og email
 }
 
 function getHostById(værtID) {
-  return hosts.find(host => host.værtID === værtID);
+  for (let i = 0; i < hosts.length; i++) {
+    if (hosts[i].værtID === værtID) {
+      return decryptHostTlfOgMail(hosts[i]); // Returnerer host med dekrypteret telefonNr og email
+    }
+  }
+  return undefined;
 }
 
 function getHostsByLocation(lokation) {
-  return hosts.filter(host => host.lokation === lokation);
+  const result = [];
+  for (let i = 0; i < hosts.length; i++) {
+    if (hosts[i].lokation === lokation) {
+      result.push(decryptHostTlfOgMail(hosts[i])); // Dekrypter telefonnummer og email
+    }
+  }
+  return result; // Returnerer alle hosts med dekrypteret telefonNr og email
 }
 
 
 module.exports = {
-  hosts,
   getAllHosts,
   getHostById,
   getHostsByLocation,
   findHostMedEmailOgPassword
 };
 
+// ************** test **************
+let result = getAllHosts();
+console.log(result);
+ //************** test **************
+//let result = getHostById(1);
+//console.log(result);
+ //************** test **************
+//let result = getHostsByLocation("København");
+//console.log(result);
+ //************** test **************
+//let result = findHostMedEmailOgPassword("anna@understory.dk", "anna123");
+//console.log(result);
+// ************** test **************
