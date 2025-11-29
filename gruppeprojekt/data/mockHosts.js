@@ -12,7 +12,7 @@ const hosts = [
     navn: "Anna",
     email: encrypt("anna@understory.dk"),
     password: "$2b$10$9bOXFXIjk6qoDXRW63B0NOcRdCPjZaPIzYmZyetPEgAAp.aBENfGG", // hashed password, "anna123"
-    telefonNr: encrypt("+4591977138"), // Krypteret telefonnummer
+    telefonNr: encrypt("+4528684727"), // Krypteret telefonnummer
     lokation: "København",
     apiUrl: "https://jsonplaceholder.typicode.com/posts" // idk om vi skal bruge det 
   },
@@ -21,7 +21,7 @@ const hosts = [
     navn: "Tim",
     email: encrypt("tim@understory.dk"),
     password: "$2b$10$rxMOn2eloHoGyyvquer.2u.8DcjjH1GF9zB7CpPOSF91AgxQKX/Fq", // hashed password, "tim123"
-    telefonNr: encrypt("+4591977138"), // Krypteret telefonnummer
+    telefonNr: encrypt("+4531903444"), // Krypteret telefonnummer
     lokation: "København",
     apiUrl: "https://jsonplaceholder.typicode.com/users" // idk om vi skal bruge det 
   }

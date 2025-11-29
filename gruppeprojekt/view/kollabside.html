@@ -287,7 +287,8 @@
                     },
                     timestamp: new Date().toISOString()
                 };
-                
+                console.log("****Besked data event info host****");
+                console.log(beskedData.eventInfo.host)
                 try {
                     // Simuler afsendelse (i virkeligheden ville dette gå til en server)
                     await sendBesked(beskedData);

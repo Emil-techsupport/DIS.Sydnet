@@ -19,10 +19,10 @@ if (accountSid && authToken && twilioPhoneNumber) {
     }
 }
 
-// Værters telefonnumre 
-const værtTelefonnumre = {
     //'Anna': '+4591977138',  // Medas nr 
     //'Tim': '+4591977138'    // Medas nr
+// Værters telefonnumre 
+const værtTelefonnumre = {
     'Anna': '+4528684727',  // Emils nr 
     'Tim': '+4531903444'    // Jans nr
 };
