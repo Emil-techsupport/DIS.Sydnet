@@ -51,8 +51,12 @@ async function sendSMSTilVært(beskedData) {
     
     // Gem tracking - begge retninger så de kan kommunikere
     // Vært B's nummer -> Vært A's nummer (så Vært B kan finde Vært A når de svarer)
+    console.log("****besked.Data.senderPhone****");
+    console.log(beskedData.senderPhone);
     aktiveBeskeder[værtTlf] = beskedData.senderPhone;
     // Vært A's nummer -> Vært B's nummer (så Vært A kan finde Vært B når de svarer)
+    console.log("****værtTlf****");
+    console.log(værtTlf);
     aktiveBeskeder[beskedData.senderPhone] = værtTlf;
     
     // Gem til fil så det overlever server genstart
