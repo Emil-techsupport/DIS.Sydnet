@@ -87,10 +87,24 @@
 
     .main-header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;   /* ⬅ læg dem under hinanden */
+      align-items: flex-start;  /* ⬅ venstrestillet */
       margin-bottom: 24px;
     }
+
+
+    .samarbejdeEvent {
+        text-decoration: underline;
+        text-decoration-color: #6b7280;
+    }
+
+    .eventinfo {
+      color:#000000;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
 
     .title {
       font-size: 28px;

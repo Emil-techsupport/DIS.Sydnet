@@ -239,17 +239,13 @@
         toggleBtn.classList.remove("on");
         toggleText.innerHTML = '<div>Nej tak</div>';
       }
+
+      // Når man klikker på "Find samarbejdespartner" knappen, så bliver man sendt videre til search.html siden.
+      document.getElementById("samarbejdeKnap").addEventListener('click', function() {
+        window.location.href = `/search?eventID=${clickedEventId}`;
+      });
     }
     inputEventInfo();
-
-
-    // Når man klikker på "Find samarbejdespartner" knappen
-    document.getElementById("samarbejdeKnap").addEventListener('click', function() {
-
-      window.location.href = "/search?eventID=" + clickedEventId;
-        // Gå til kollab-siden
-        //window.location.href = "/search";
-    });
 
   </script>
 </body>

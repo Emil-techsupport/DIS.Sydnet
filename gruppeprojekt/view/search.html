@@ -3,7 +3,7 @@
 <head>
   <link rel="stylesheet" href="/search.css">
   <meta charset="UTF-8" />
-  <title>Søg Oplevelser - Kollab</title>
+  <title>Søg Oplevelser - Samarbejde</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
 </head>
@@ -56,9 +56,14 @@
     <main class="main">
       <div class="main-header">
         <h1 class="title">Søg efter events at samarbejde med her</h1>
-        <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
-          Find oplevelser og start samarbejde med andre værter
+        <p style="font-size: 16px; margin-top: 8px;">
+          Find andre oplevelser og start samarbejde med andre værter
         </p>
+      </div>
+
+      <div class="second-header">
+        <div class="samarbejdeEvent">Du er lige nu i gang med at finde et samarbejde for dette af dine events:</div>
+        <div class ="eventinfo" id="eventInfo"></div>
       </div>
 
       <!-- Søge container -->
@@ -103,36 +108,49 @@
   </div>
 
   <script>
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const clickedEventId = urlParams.get("eventID");
-    console.log(clickedEventId);
-
-
-
     let allEvents = []; // Gemmer alle events
     
     // Hent alle events når siden loader
     async function loadAllEvents() {
       try {
         // Tjek om bruger er logget ind
-        const authResponse = await fetch('/api/auth/me');
-        const authResult = await authResponse.json();
+        const brugerTjek = await fetch('/api/auth/me');
+        const brugerTjekResultat = await brugerTjek.json();
         
-        if (!authResult.success) {
+        //Hvis brugeren ikke er logget ind, så send ham til log ind siden
+        if (!brugerTjekResultat.success) {
           window.location.href = '/login';
           return;
         }
         
+        // Find navn på vært der er logget ind
+        const loggetIndHost = brugerTjekResultat.host.navn;
         // Find en anden vært end den logget ind (hvis Anna er logget ind, vis Tim's events)
-        const loggedInHost = authResult.host.navn;
-        const searchHost = loggedInHost === 'Anna' ? 'Tim' : 'Anna';
+        let samarbejdeHost;
+        if (loggetIndHost === "Anna") {
+          samarbejdeHost = "Tim";
+        } else {
+          samarbejdeHost = "Anna";
+        }
         
-        const response = await fetch('/services/hostEvents?host=' + searchHost);
-        const result = await response.json();
-        
-        if (result.success && result.data) {
-          const hostData = result.data;
+        //Find alle events som "samarbejdeHost" har(Modsat host af den som er logget ind)
+        const response = await fetch('/services/hostEvents?host=' + samarbejdeHost);
+        const HostOgEventData = await response.json();
+
+        //console.log("*******Events for host der ikke er logget ind******");
+        //console.log(HostOgEventData);
+
+
+        const params = new URLSearchParams(window.location.search);
+        const clickedEventId = params.get("eventID");
+
+        console.log("********ClickedEvent.ID*********")
+        console.log(clickedEventId);
+
+
+        //Hvis det gik godt med at hente "samarbejdeHost"s events
+        if (HostOgEventData.success && HostOgEventData.data) {
+          const hostData = HostOgEventData.data;
           const eventsArray = hostData.events[0];
           allEvents = [];
           
@@ -154,7 +172,6 @@
               }
             });
           }
-          
           displayResults(allEvents);
         }
       } catch (error) {
@@ -238,7 +255,7 @@
               <div class="result-subtitle">${event.source} • ${event.lokation}</div>
             </div>
             <button class="collab-btn">
-              Kollab
+              Anmod om samarbejde
             </button>
           </div>
           
@@ -316,6 +333,43 @@
         console.error('Fejl ved logout:', error);
       }
     }
+
+    //Finder det event der er trykket på under "Oplevelser", altså det event der vil samarbejdes omkring
+    async function findSamarbejdeEvent() {
+      try {
+        // Find info på vært der er logget ind.
+        const hvemErLoggetInd = await fetch('/api/auth/me');
+        const hvemErLoggetIndResultat = await hvemErLoggetInd.json();
+        
+        // Find navn på vært der er logget ind
+        const loggetIndHostNavn = hvemErLoggetIndResultat.host.navn;
+        
+        //Find alle events som denne vært har(Vært der er logget ind)
+        const response = await fetch('/services/hostEvents?host=' + loggetIndHostNavn);
+        const HostOgEventData = await response.json();
+
+        console.log("*******Events for host der er logget ind******");
+        console.log(HostOgEventData);
+
+        //Find det event der er blivet klikket på i oplevelser
+        const params = new URLSearchParams(window.location.search);
+        const clickedEventId = params.get("eventID");
+
+        console.log("********ClickedEvent.ID*********")
+        console.log(clickedEventId);
+
+        let giventEventInfo = HostOgEventData.data.events[0][clickedEventId];
+        //console.log("****EventInfo*****");
+        //console.log(giventEventInfo);
+
+        let test = document.getElementById("eventInfo");
+        test.innerHTML = "Event id: " + clickedEventId + ", Event titel: " + giventEventInfo.titel;
+
+      } catch (error) {
+        console.error('Fejl:', error);
+      }
+    };
+
     
     // Load events når siden loader
     window.addEventListener('DOMContentLoaded', function() {
@@ -324,6 +378,7 @@
         logoutBtn.addEventListener('click', logout);
       }
       loadAllEvents();
+      findSamarbejdeEvent();
     });
   </script>
 </body>
