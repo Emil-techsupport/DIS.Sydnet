@@ -23,8 +23,8 @@ if (accountSid && authToken && twilioPhoneNumber) {
 const værtTelefonnumre = {
     //'Anna': '+4591977138',  // Medas nr 
     //'Tim': '+4591977138'    // Medas nr
-    'Anna': '+4528684727',  // Medas nr 
-    'Tim': '+4531903444'    // Medas nr
+    'Anna': '+4528684727',  // Emils nr 
+    'Tim': '+4531903444'    // Jans nr
 };
 
 // Tracking: værtB -> værtA så man kan videresende svar
