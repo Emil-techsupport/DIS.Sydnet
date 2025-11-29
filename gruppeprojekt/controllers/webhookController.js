@@ -13,10 +13,11 @@ async function twilioWebhook(req, res) {
     } catch (error) {
         console.error('Fejl i twilioWebhook:', error);
     }
-    // Send svar tilbage til Twilio (altid - uanset om der var fejl eller ej) bare for at sikre at twilio modtager et svar
+    // Send svar tilbage til Twilio (altid - uanset om der var fejl eller ej)
     // OBS: Vi sender XML fordi det er det Twilio forstår
-    // res.set('Content-Type', 'text/xml'); 
-  //  res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);// vi sender nogett tomt fordi dette er bare en skriring 
+    // Hvis Twilio ikke får et svar, vil den prøve at sende webhook'en igen (retry)
+    res.set('Content-Type', 'text/xml'); 
+    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`); 
 };
 // her exporterer vi funktionen så den kan bruges i andre filer bruger i app.js filen
 module.exports = {
