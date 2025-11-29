@@ -75,7 +75,7 @@ const mockEvents = {
       dato: "2025-12-21",
       tidspunkt: "19:30",
       samarbejde: true,
-      lokation: "København",
+      lokation: "Helsingør",
       kategori: "Food & Tastings",
       eventkapacitet: "8 personer"
     },

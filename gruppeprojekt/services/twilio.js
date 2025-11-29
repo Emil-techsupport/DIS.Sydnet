@@ -21,8 +21,10 @@ if (accountSid && authToken && twilioPhoneNumber) {
 
 // Værters telefonnumre 
 const værtTelefonnumre = {
-    'Anna': '+4591977138',  // Medas nr 
-    'Tim': '+4591977138'    // Medas nr
+    //'Anna': '+4591977138',  // Medas nr 
+    //'Tim': '+4591977138'    // Medas nr
+    'Anna': '+4528684727',  // Medas nr 
+    'Tim': '+4531903444'    // Medas nr
 };
 
 // Tracking: værtB -> værtA så man kan videresende svar
@@ -41,30 +43,6 @@ function gemAktiveBeskeder() {
     fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
- //Indlæs aktive beskeder fra fil ***************CHAT HJÆLPER FUNKTION ***************
- /*
-function indlæsAktiveBeskeder() {
-    try {
-        if (fs.existsSync(aktiveBeskederFil)) {
-            const data = fs.readFileSync(aktiveBeskederFil, 'utf8');
-            aktiveBeskeder = JSON.parse(data);
-            console.log('✅ aktiveBeskeder indlæst fra fil:', Object.keys(aktiveBeskeder).length, 'nøgler');
-            console.log('📊 Indhold:', JSON.stringify(aktiveBeskeder, null, 2));
-        } else {
-            console.log('⚠️ Ingen eksisterende aktiveBeskeder fil - starter med tom objekt');
-            console.log('📁 Fil sti:', aktiveBeskederFil);
-        }
-    } catch (error) {
-        aktiveBeskeder = {};
-    }
-}
-
-
-// Indlæs data når modulet starter
-indlæsAktiveBeskeder();
-*/
-//***************************************************************************************** */
-
 // Send SMS til vært og bekræftelse til afsender
 async function sendSMSTilVært(beskedData) {
   //  kollabside.html linje 269-281 bygger beskedens objekt og det er her vi bruger det til twilio
@@ -81,10 +59,11 @@ async function sendSMSTilVært(beskedData) {
     gemAktiveBeskeder();
     
     // Send SMS til Vært B ******************** 
-    const smsBesked = `Ny kollab-anmodning!
+    const smsBesked = 
+`Ny samarbejde-anmodning!
 
 Fra: ${beskedData.senderName}
-Event: ${beskedData.eventInfo.title}
+Omkring dette af dine events: ${beskedData.eventInfo.title}
 
 Besked:
 ${beskedData.messageText}
@@ -99,8 +78,9 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
     });
     
     // Send bekræftelse til afsender
-    const bekræftelsesBesked = `Din kollab-anmodning er sendt!
-Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
+    const bekræftelsesBesked = 
+`Din samarbejde-anmodning er sendt!
+Du har sendt en anmodning om samarbejde til ${beskedData.eventInfo.host} om følgende event:
 "${beskedData.eventInfo.title}"
 
 - Understory`;
