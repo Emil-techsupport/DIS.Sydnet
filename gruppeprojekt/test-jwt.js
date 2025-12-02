@@ -38,7 +38,8 @@ async function testJWT() {
     };
     
     const token = await signAsync(payload, SECRET, signOptions);
-    console.log('✅ Token oprettet:', token.substring(0, 50) + '...\n');
+    //console.log('✅ Token oprettet:', token.substring(0, 50) + '...\n');
+    console.log('✅ Token oprettet:', token);
     
     // Test 2: Verificer token
     console.log('TEST 2: Verificer JWT token');

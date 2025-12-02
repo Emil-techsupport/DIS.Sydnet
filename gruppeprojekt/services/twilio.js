@@ -47,40 +47,92 @@ function gemAktiveBeskeder() {
 async function sendSMSTilVært(beskedData) {
   //  kollabside.html linje 269-281 bygger beskedens objekt og det er her vi bruger det til twilio
     // Find Vært B's telefonnummer (den der modtager beskeden)
-    const værtTlf = værtTelefonnumre[beskedData.eventInfo.host];
+    const værtBsTlf = værtTelefonnumre[beskedData.eventInfo.host];
     
     // Gem tracking - begge retninger så de kan kommunikere
     // Vært B's nummer -> Vært A's nummer (så Vært B kan finde Vært A når de svarer)
-    console.log("****besked.Data.senderPhone****");
-    console.log(beskedData.senderPhone);
-    aktiveBeskeder[værtTlf] = beskedData.senderPhone;
+    //console.log("****besked.Data.senderPhone****");
+    //console.log(beskedData.senderPhone);
+    let værtAsTlf = beskedData.senderPhone
+
+    aktiveBeskeder["MinVaertAsTlf"] = værtAsTlf;
+
+    //console.log("****AKtivebeskeder tlf*****");
+    //console.log(aktiveBeskeder);
     // Vært A's nummer -> Vært B's nummer (så Vært A kan finde Vært B når de svarer)
-    console.log("****værtTlf****");
-    console.log(værtTlf);
-    aktiveBeskeder[beskedData.senderPhone] = værtTlf;
+    //console.log("****værtTlf****");
+    //console.log(værtBsTlf);
+
+    aktiveBeskeder["MinVaertBsTlf"] = værtBsTlf;
+
+    console.log("****Aktivebeskeder*****");
+    console.log(aktiveBeskeder);
     
     // Gem til fil så det overlever server genstart
     gemAktiveBeskeder();
     
-    // Send SMS til Vært B ******************** 
+    // Opret SMS tekst der skal sendes til *********vært B**********
     const smsBesked = 
 `Ny samarbejde-anmodning!
 
-Fra: ${beskedData.senderName}
+Fra: ${værtAsTlf}
 Omkring dette af dine events: ${beskedData.eventInfo.title}
 
 Besked:
 ${beskedData.messageText}
 Svar på denne SMS for at kontakte ${beskedData.senderName}.
 - Understory`.trim();
+
+
+        console.log("*****Når vi hertil? Twilio.js*****");
+        console.log(client.messages);
+        console.log("*****Besked*****");
+        console.log(smsBesked);        
+        console.log("twilioPhoneNumber: " + twilioPhoneNumber);
+        console.log("værtAsTlf: " + værtAsTlf);
+        console.log("værtBsTlf: " + værtBsTlf);
+        console.log("***** Client *******");
+        console.log(client);
     
-    // Send SMS til vært ************* Vært B *************
+    // Opret selve beskeden der skal sendes til ******vært B*******
+
+    // ****************** START ******************************
+    /*
+    // byg en ny JWT token from scratch
+    const jwt = require('jsonwebtoken');
+    const util = require('util');
+    const signAsync = util.promisify(jwt.sign);
+    const SECRET = process.env.SECRET;
+    const payload = {
+      sub: 'host:1',
+      navn: 'Anna',
+      email: 'anna@understory.dk',
+      værtID: 1
+    };
+    const signOptions = {
+      algorithm: 'HS256',
+      expiresIn: '1h',
+      issuer: 'understory-app'
+    };
+    const token = await signAsync(payload, SECRET, signOptions);
+    console.log("***** Token *******");
+    console.log(token);
+    */
+    // ****************** END ******************************
+
+    //Her sender vi beskeden til vært B via Twilio api
+
     const message = await client.messages.create({
         body: smsBesked,
         from: twilioPhoneNumber,
-        to: værtTlf
+        to: værtBsTlf
     });
+
     
+    console.log("****Første besked fra Vært A til vært B****");
+    console.log(message);
+
+
     // Send bekræftelse til afsender
     const bekræftelsesBesked = 
 `Din samarbejde-anmodning er sendt!
@@ -88,28 +140,41 @@ Du har sendt en anmodning om samarbejde til ${beskedData.eventInfo.host} om føl
 "${beskedData.eventInfo.title}"
 
 - Understory`;
-    
+     //Her sender vi besked til vært A
     await client.messages.create({
         body: bekræftelsesBesked,
         from: twilioPhoneNumber,
-        to: beskedData.senderPhone
+        to: værtAsTlf
     });
+    
+   console.log("*****Return****");
+   console.log(message.sid);
+   console.log(værtBsTlf);
     
     return { 
         success: true,
         messageSid: message.sid,
-        værtTelefon: værtTlf
+        værtTelefon: værtBsTlf
     };
 }
 
 
 // funktionen: Vært B svarer på SMS, kalder denne funktion, den videresender beskeden til vært A 
 // bliver kaldt af 
+
+
 async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     // ekstra tjek om twilio er sat op
+    console.log("*****Client i håndterIndkommendeSMS******");
+    console.log(client);
     if (!client) {
-        return;
+        return console.log("*****We are fucked*****");
     }
+
+    console.log("*****håndterIndkommendeSMS indhold*****");
+    console.log(fraNummer +":"+ tilNummer + ":"+ beskedTekst);
+
+
     // fraNummer = Vært B (den der lige har sendt beskeden)
     // Find Vært A's telefonnummer (den der skal modtage beskeden)
     // husk dette er en objekt dvs:

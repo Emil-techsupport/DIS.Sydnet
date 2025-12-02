@@ -1,13 +1,16 @@
 // Webhook controller til at håndtere indkommende SMS fra Twilio
-// Dette er vigtgit når twilio sender en besked til vært B så vi kan videresende svar til vært A 
+// Dette er vigtigt således, at vært B kan svarer tilbage til vært A 
 const { håndterIndkommendeSMS } = require('../services/twilio');
 
-// Håndter Twilio webhook for indkommende SMS her bliver data hentet ud fra req.body og sendt til håndterIndkommendeSMS funktionen
+// Håndter Twilio webhook for indkommende SMS. Her bliver data hentet ud fra req.body og sendt til håndterIndkommendeSMS funktionen
 async function twilioWebhook(req, res) {
     try {
         // Hent data fra Twilio
         const { From, To, Body } = req.body;
-        
+
+        console.log("****Body i webhook****");
+        console.log(From + ":" + To + ":" + Body);
+
         // Håndter den indkommende SMS
         await håndterIndkommendeSMS(From, To, Body);
     } catch (error) {

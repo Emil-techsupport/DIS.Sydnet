@@ -99,8 +99,8 @@ module.exports = {
 };
 
 // ************** test **************
-let result = getAllHosts();
-console.log(result);
+//let result = getAllHosts();
+//console.log(result);
  //************** test **************
 //let result = getHostById(1);
 //console.log(result);

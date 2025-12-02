@@ -1,5 +1,5 @@
 
-// Her bygger vi en rate limiter som kan burgues på vores webhooks i twilio 
+// Her bygger vi en rate limiter som kan bruges på vores webhooks i twilio 
 const rateLimit = require('express-rate-limit'); // OBS. husk at lave npm install express-rate-limit i terminalen for at det virker
 
 const twilioRateLimiter = rateLimit({

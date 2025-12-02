@@ -313,12 +313,15 @@
                 const response = await fetch('/api/kollab/send-sms', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        xTwilioWebhookEnabled: true
                     },
                     body: JSON.stringify(beskedData)
                 });
                 
                 const result = await response.json();
+                console.log("*****Result******");
+                console.log(result);
                 
                 if (!result.success) {
                     throw new Error(result.message || 'SMS kunne ikke sendes');
