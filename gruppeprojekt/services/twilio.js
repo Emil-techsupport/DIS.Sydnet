@@ -56,6 +56,8 @@ function laesAktiveBeskeder() {
         const dictionary = {};
 
         lines.forEach((line)=>{
+            console.log("****line*****");
+            console.log(line);
             const[key,value] = line.split(':');
             const trimmedKey = key.trim();
             const trimmedValue = value.trim();
