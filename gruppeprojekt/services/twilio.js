@@ -43,6 +43,23 @@ function gemAktiveBeskeder() {
     fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
+function laesAktiveBeskeder() {
+    
+    console.log("****** Prøver at løse JSON fil *************");
+
+    let aktiveBeskederindhold;
+
+    try{
+        aktiveBeskederindhold =  fs.readFileSync(aktiveBeskederFil);
+        return aktiveBeskederindhold;
+    } catch (error) {
+        console.error('Fejl i forbindelse med laesning af aktiveBeskeder.json fil.', error.message);
+    }
+
+
+}
+
+
 // Send SMS til vært og bekræftelse til afsender
 async function sendSMSTilVært(beskedData) {
   //  kollabside.html linje 269-281 bygger beskedens objekt og det er her vi bruger det til twilio
@@ -174,13 +191,16 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log("*****håndterIndkommendeSMS indhold*****");
     console.log(fraNummer +":"+ tilNummer + ":"+ beskedTekst);
 
-
+    console.log("*****Indlæsning af aktive beskeder****");
+    let json_content = laesAktiveBeskeder();
+    console.log(json_content);
     // fraNummer = Vært B (den der lige har sendt beskeden)
     // Find Vært A's telefonnummer (den der skal modtage beskeden)
     // husk dette er en objekt dvs:
     //Objektet viser alle aktive samtaler. Hver nøgle er et telefonnummer,
     //  og værdien er det nummer, de kan kommunikere med.
-    const værtATelefon = aktiveBeskeder[værtAsTlf];
+    //const værtATelefon = aktiveBeskeder[værtAsTlf];
+    let værtATelefon = "+4528684727";
 
     console.log("*****VærtATelefon****");
     console.log(værtATelefon);
