@@ -51,8 +51,17 @@ function laesAktiveBeskeder() {
 
     try{
         aktiveBeskederindhold =  fs.readFileSync(aktiveBeskederFil);
-        const aktiveBeskeder = JSON.parse(aktiveBeskederindhold); // ← konverter tekst → JS objekt
-        return aktiveBeskeder;
+        const dictionary = {};
+
+        aktiveBeskederindhold.forEach((line)=>{
+            const[key, value] = line.split(':');
+            const trimmedKey = key.trim();
+            const trimmedValue = value.trim();
+
+            dictionary[trimmedKey] = trimmedValue;
+        });
+
+        return dictionary;
 
     } catch (error) {
         console.error('Fejl i forbindelse med laesning af aktiveBeskeder.json fil.', error.message);
@@ -113,31 +122,7 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
         console.log("***** Client *******");
         console.log(client);
     
-    // Opret selve beskeden der skal sendes til ******vært B*******
 
-    // ****************** START ******************************
-    /*
-    // byg en ny JWT token from scratch
-    const jwt = require('jsonwebtoken');
-    const util = require('util');
-    const signAsync = util.promisify(jwt.sign);
-    const SECRET = process.env.SECRET;
-    const payload = {
-      sub: 'host:1',
-      navn: 'Anna',
-      email: 'anna@understory.dk',
-      værtID: 1
-    };
-    const signOptions = {
-      algorithm: 'HS256',
-      expiresIn: '1h',
-      issuer: 'understory-app'
-    };
-    const token = await signAsync(payload, SECRET, signOptions);
-    console.log("***** Token *******");
-    console.log(token);
-    */
-    // ****************** END ******************************
 
     //Her sender vi beskeden til vært B via Twilio api
 
@@ -194,8 +179,9 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log(fraNummer +":"+ tilNummer + ":"+ beskedTekst);
 
     console.log("*****Indlæsning af aktive beskeder****");
-    let json_content = laesAktiveBeskeder();
-    console.log(json_content);
+    let aktivebeskeder_dict = laesAktiveBeskeder();
+    console.log(aktivebeskeder_dict);
+    console.log(aktivebeskeder_dict[fraNummer]);
     // fraNummer = Vært B (den der lige har sendt beskeden)
     // Find Vært A's telefonnummer (den der skal modtage beskeden)
     // husk dette er en objekt dvs:
