@@ -50,11 +50,12 @@ function laesAktiveBeskeder() {
     let aktiveBeskederindhold;
 
     try{
-        aktiveBeskederindhold =  fs.readFileSync(aktiveBeskederFil);
-        /*
+        aktiveBeskederindhold =  fs.readFileSync(aktiveBeskederFil, 'utf8');
+ 
+        const lines = aktiveBeskederindhold.split('\n');
         const dictionary = {};
 
-        aktiveBeskederindhold.forEach((line)=>{
+        lines.forEach((line)=>{
             const[key,value] = line.split(':');
             const trimmedKey = key.trim();
             const trimmedValue = value.trim();
@@ -63,8 +64,6 @@ function laesAktiveBeskeder() {
         });
 
         return dictionary;
-        */
-        return aktiveBeskederindhold
 
     } catch (error) {
         console.error('Fejl i forbindelse med laesning af aktiveBeskeder.json fil.', error.message);
