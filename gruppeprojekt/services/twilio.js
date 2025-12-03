@@ -180,10 +180,15 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     // husk dette er en objekt dvs:
     //Objektet viser alle aktive samtaler. Hver nøgle er et telefonnummer,
     //  og værdien er det nummer, de kan kommunikere med.
-    const værtATelefon = aktiveBeskeder[fraNummer];
+    const værtATelefon = aktiveBeskeder[værtAsTlf];
 
+    console.log("*****VærtATelefon****");
+    console.log(værtATelefon);
+    
     if (værtATelefon) { // hvis Vært A's telefonnummer findes, send beskeden videre
         // Send besked videre til Vært A
+        console.log("*****Vi kommer ind i if værtatlf****");
+
         await client.messages.create({
             body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
             from: twilioPhoneNumber,
@@ -191,11 +196,13 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
         });
         
         // Gem modsat retning så begge kan svare til hinanden
-        aktiveBeskeder[værtATelefon] = fraNummer;
+        //aktiveBeskeder[værtBsTlf] = fraNummer;
         
         // Gem til fil så det overlever server genstart
         gemAktiveBeskeder();
     }
+
+    console.log("******VærtAsTlfnummer udfyldt?*****");
 }
 
 module.exports = {
