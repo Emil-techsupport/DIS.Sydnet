@@ -45,13 +45,15 @@ function gemAktiveBeskeder() {
 
 function laesAktiveBeskeder() {
     
-    console.log("****** Prøver at løse JSON fil *************");
+    console.log("****** Prøver at læse JSON fil *************");
 
     let aktiveBeskederindhold;
 
     try{
         aktiveBeskederindhold =  fs.readFileSync(aktiveBeskederFil);
-        return aktiveBeskederindhold;
+        const aktiveBeskeder = JSON.parse(aktiveBeskederindhold); // ← konverter tekst → JS objekt
+        return aktiveBeskeder;
+
     } catch (error) {
         console.error('Fejl i forbindelse med laesning af aktiveBeskeder.json fil.', error.message);
     }
@@ -72,7 +74,7 @@ async function sendSMSTilVært(beskedData) {
     //console.log(beskedData.senderPhone);
     let værtAsTlf = beskedData.senderPhone
 
-    aktiveBeskeder["MinVaertAsTlf"] = værtAsTlf;
+    aktiveBeskeder[værtBsTlf] = værtAsTlf;
 
     //console.log("****AKtivebeskeder tlf*****");
     //console.log(aktiveBeskeder);
@@ -80,7 +82,7 @@ async function sendSMSTilVært(beskedData) {
     //console.log("****værtTlf****");
     //console.log(værtBsTlf);
 
-    aktiveBeskeder["MinVaertBsTlf"] = værtBsTlf;
+    aktiveBeskeder[værtAsTlf] = værtBsTlf;
 
     console.log("****Aktivebeskeder*****");
     console.log(aktiveBeskeder);
