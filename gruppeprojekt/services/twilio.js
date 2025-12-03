@@ -188,7 +188,7 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
         return console.log("*****We are fucked*****");
     }
 
-    console.log("*****håndterIndkommendeSMS indhold*****");
+    console.log("*****håndterIndkommendeSMS indhold2*****");
     console.log(fraNummer +":"+ tilNummer + ":"+ beskedTekst);
 
     console.log("*****Indlæsning af aktive beskeder****");
