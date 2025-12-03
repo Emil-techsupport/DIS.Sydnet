@@ -83,7 +83,7 @@ ${beskedData.messageText}
 Svar på denne SMS for at kontakte ${beskedData.senderName}.
 - Understory`.trim();
 
-
+        console.log("*****Dato2025*******");
         console.log("*****Når vi hertil? Twilio.js*****");
         console.log(client.messages);
         console.log("*****Besked*****");
