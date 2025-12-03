@@ -58,11 +58,13 @@ function laesAktiveBeskeder() {
         lines.forEach((line)=>{
             console.log("****line*****");
             console.log(line);
-            const[key,value] = line.split(':');
-            const trimmedKey = key.trim();
-            const trimmedValue = value.trim();
+            if (!line.includes("{")&&!line.includes("}")){
+                const[key,value] = line.split(':');
+                const trimmedKey = key.trim();
+                const trimmedValue = value.trim();
 
-            dictionary[trimmedKey] = trimmedValue;
+                dictionary[trimmedKey] = trimmedValue;
+            }
         });
 
         return dictionary;
