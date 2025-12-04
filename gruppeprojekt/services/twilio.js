@@ -59,11 +59,33 @@ function laesAktiveBeskeder() {
             console.log("****line*****");
             console.log(line);
             if (!line.includes("{")&&!line.includes("}")){
+                // trim linjen først
+                const trimmedLine = line.trim();
+
+                // find første kolon — hvis ingen kolon, spring over
+                const index = trimmedLine.indexOf(':');
+
+                if (index === -1) return;
+
+                // brug slice i stedet for split, så værdien kan indeholde ':'
+                let key = trimmedLine.slice(0, index).trim();
+                let value = trimmedLine.slice(index + 1).trim();
+
+                // fjern omkringliggende anførselstegn (single eller double) fra key og value
+                key = key.replace(/^['"]+|['"]+$/g, '');
+                value = value.replace(/^['"]+|['"]+$/g, '');
+
+                // fjern trailing komma i value, hvis der er et
+                value = value.replace(/,$/, '').trim();
+
+                dictionary[key] = value;
+
+                /*
                 const[key,value] = line.split(':');
                 const trimmedKey = key.trim();
                 const trimmedValue = value.trim();
 
-                dictionary[trimmedKey] = trimmedValue;
+                dictionary[trimmedKey] = trimmedValue;*/
             }
         });
 
@@ -178,7 +200,7 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log("*****Client i håndterIndkommendeSMS******");
     console.log(client);
     if (!client) {
-        return console.log("*****We are fucked*****");
+        return console.log("*****Fejl i henting af info fra Twilio*****");
     }
 
     console.log("*****håndterIndkommendeSMS indhold2*****");
