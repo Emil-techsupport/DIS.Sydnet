@@ -216,7 +216,7 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     //Objektet viser alle aktive samtaler. Hver nøgle er et telefonnummer,
     //  og værdien er det nummer, de kan kommunikere med.
     //const værtATelefon = aktiveBeskeder[værtAsTlf];
-    let værtATelefon = "+4528684727";
+    let værtATelefon = "+4531903444";
 
     console.log("*****VærtATelefon****");
     console.log(værtATelefon);
