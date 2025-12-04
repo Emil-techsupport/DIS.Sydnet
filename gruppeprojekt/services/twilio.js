@@ -7,10 +7,12 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-// Fil til at gemme aktive beskeder
+// Fil til at gemme numre fra værter
 const telefonNumreFil = path.join(__dirname, '..', 'data', 'telefonNumre.json');
 
+//Opretter client variable
 let client = null;
+//Hvis vi har alt info som twilio api kræver, så gem det i client
 if (accountSid && authToken && twilioPhoneNumber) {
     try {
         client = twilio(accountSid, authToken);
@@ -20,39 +22,44 @@ if (accountSid && authToken && twilioPhoneNumber) {
     }
 }
 
-    //'Anna': '+4591977138',  // Medas nr 
-    //'Tim': '+4591977138'    // Medas nr
+
 // Værters telefonnumre 
 const værtTelefonnumre = {
     'Anna': '+4528684727',  // Emils nr 
-    'Tim': '+4531903444'    // Jans nr
+    'Tim': '+4591977138'    // Meda nr
 };
 
-// Tracking: værtB -> værtA så man kan videresende svar
+//Dictionary til at putte numre ind i
 let telefonNumre = {};
 
-// Gem tracking til fil, hvor vi tilføjer nye beskeder og gemmer dem 
+//Funktion til at gemme telefon numre
 function gemTelefonNumre() {
     // Opret data mappen hvis den ikke findes
     const dataPakke = path.dirname(telefonNumreFil);
-    if (!fs.existsSync(dataPakke)) { // existsSync søger efter filen, hvis den ikke findes, opret den
-        fs.mkdirSync(dataPakke, { recursive: true }); // mkdirSync opretter mappen
+
+    // existsSync søger efter filen, hvis den ikke findes, opret den
+    if (!fs.existsSync(dataPakke)) {
+        // mkdirSync opretter mappen, hvis den ikke findes
+        fs.mkdirSync(dataPakke, { recursive: true }); 
     }
-    
-    // Gem tracking data til fil
-    // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
+
+    // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng
+    //"telefonNumre" indeholder den information vi vil have ind i "telefonNumreFil", null = tag alt med, 2 opsæt pænt
     fs.writeFileSync(telefonNumreFil, JSON.stringify(telefonNumre, null, 2));
 }
 
+//Funktion til at læse "telefonNumreFil" filen
 function laesTelefonNumre() {
-    
-    console.log("****** Prøver at læse JSON fil *************");
+
+    //console.log("****** Prøver at læse JSON fil *************");
 
     let telefonNumreIndhold;
 
     try{
+        //Sætter givne telefonnumre fra filen ind i denne variable
         telefonNumreIndhold =  fs.readFileSync(telefonNumreFil, 'utf8');
- 
+
+        //
         const lines = telefonNumreIndhold.split('\n');
         const dictionary = {};
 
@@ -76,7 +83,7 @@ function laesTelefonNumre() {
                 key = key.replace(/^['"]+|['"]+$/g, '');
                 value = value.replace(/^['"]+|['"]+$/g, '');
 
-                // fjern trailing komma i value, hvis der er et
+                //Sletter alle unødvendige tegn i value
                 value = value
                     .replace(/^['"]+|['"]+$/g, '')   // fjern ydre anførselstegn igen (sikrer dobbeltrens)
                     .replace(/",?$/, '')             // fjerner slut: " eller ",
