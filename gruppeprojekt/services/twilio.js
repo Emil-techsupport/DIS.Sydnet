@@ -76,7 +76,11 @@ function laesAktiveBeskeder() {
                 value = value.replace(/^['"]+|['"]+$/g, '');
 
                 // fjern trailing komma i value, hvis der er et
-                value = value.replace(/,$/, '').trim();
+                value = value
+                    .replace(/^['"]+|['"]+$/g, '')   // fjern ydre anførselstegn igen (sikrer dobbeltrens)
+                    .replace(/",?$/, '')             // fjerner slut: " eller ",
+                    .replace(/,$/, '')               // fjerner trailing komma
+                    .trim();
 
                 dictionary[key] = value;
 
@@ -216,19 +220,20 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     //Objektet viser alle aktive samtaler. Hver nøgle er et telefonnummer,
     //  og værdien er det nummer, de kan kommunikere med.
     //const værtATelefon = aktiveBeskeder[værtAsTlf];
-    let værtATelefon = "+4531903444";
+    //let værtATelefon = "+4531903444";
 
-    console.log("*****VærtATelefon****");
-    console.log(værtATelefon);
+    console.log("*****VærtTelefoner****");
+    console.log(fraNummer);
+    console.log(tilNummer);
     
-    if (værtATelefon) { // hvis Vært A's telefonnummer findes, send beskeden videre
+    if (fraNummer) { // hvis Vært A's telefonnummer findes, send beskeden videre
         // Send besked videre til Vært A
         console.log("*****Vi kommer ind i if værtatlf****");
 
         await client.messages.create({
             body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
             from: twilioPhoneNumber,
-            to: værtATelefon // send beskeden til Vært A
+            to: fraNummer // send beskeden til Vært A
         });
         
         // Gem modsat retning så begge kan svare til hinanden
