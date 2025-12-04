@@ -37,10 +37,10 @@ async function fetchHostEvents(hostNavn) {
     const cacheKey = `host_events_${hostNavn.toLowerCase()}`;
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      console.log(`Returning ${hostNavn} events from cache ${cacheKey}`);
+      console.log(`CASH er fundet ${hostNavn} events fra cache ${cacheKey}`);
       return cachedData;
     }
-    
+    console.log(`data hentet fra selve serveren ikke cash data`)
     const hosts = getAllHosts();
     let host = null;
     
