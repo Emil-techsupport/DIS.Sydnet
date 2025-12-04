@@ -226,7 +226,6 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log(fraNummer);
     console.log(tilNummer);
     console.log(aktivebeskeder_dict[fraNummer]);
-    console.log(aktivebeskeder_dict[tilNummer]);
 
     
     if (aktivebeskeder_dict[fraNummer]) { // hvis Vært A's telefonnummer findes, send beskeden videre
