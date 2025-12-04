@@ -225,15 +225,18 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     console.log("*****VærtTelefoner****");
     console.log(fraNummer);
     console.log(tilNummer);
+    console.log(aktivebeskeder_dict[fraNummer]);
+    console.log(aktivebeskeder_dict[tilNummer]);
+
     
-    if (fraNummer) { // hvis Vært A's telefonnummer findes, send beskeden videre
+    if (aktivebeskeder_dict[fraNummer]) { // hvis Vært A's telefonnummer findes, send beskeden videre
         // Send besked videre til Vært A
         console.log("*****Vi kommer ind i if værtatlf****");
 
         await client.messages.create({
             body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
             from: twilioPhoneNumber,
-            to: fraNummer // send beskeden til Vært A
+            to: aktivebeskeder_dict[fraNummer] // send beskeden til Vært A
         });
         
         // Gem modsat retning så begge kan svare til hinanden
