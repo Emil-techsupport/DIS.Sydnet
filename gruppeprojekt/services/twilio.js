@@ -117,8 +117,8 @@ async function sendSMSTilVært(beskedData) {
 
     telefonNumre[værtAsTlf] = værtBsTlf;
 
-    console.log("****TelefonNumre*****");
-    console.log(telefonNumre);
+    //console.log("****TelefonNumre*****");
+    //console.log(telefonNumre);
     
     // Gem til fil så det overlever server genstart
     gemTelefonNumre();
@@ -127,7 +127,8 @@ async function sendSMSTilVært(beskedData) {
     const smsBesked = 
 `Ny samarbejde-anmodning!
 
-Fra: ${værtAsTlf}
+Fra vært: ${beskedData.senderName}
+Du kan også kontakte denne vært på: ${værtAsTlf}
 Omkring dette af dine events: ${beskedData.eventInfo.title}
 
 Besked:
@@ -135,21 +136,19 @@ ${beskedData.messageText}
 Svar på denne SMS for at kontakte ${beskedData.senderName}.
 - Understory`.trim();
 
-        console.log("*****Dato2025*******");
-        console.log("*****Når vi hertil? Twilio.js*****");
-        console.log(client.messages);
-        console.log("*****Besked*****");
-        console.log(smsBesked);        
-        console.log("twilioPhoneNumber: " + twilioPhoneNumber);
-        console.log("værtAsTlf: " + værtAsTlf);
-        console.log("værtBsTlf: " + værtBsTlf);
-        console.log("***** Client *******");
-        console.log(client);
+        //*******Test og debug*******//
+        //console.log("*****Dato2025*******");
+        //console.log("*****Når vi hertil? Twilio.js*****");
+        //console.log(client.messages);
+        //console.log("*****Besked*****");
+        //console.log(smsBesked);        
+        //console.log("twilioPhoneNumber: " + twilioPhoneNumber);
+        //console.log("værtAsTlf: " + værtAsTlf);
+        //console.log("værtBsTlf: " + værtBsTlf);
+        //console.log("***** Client *******");
+        //console.log(client);
     
-
-
     //Her sender vi beskeden til vært B via Twilio api
-
     const message = await client.messages.create({
         body: smsBesked,
         from: twilioPhoneNumber,
@@ -187,43 +186,45 @@ Du har sendt en anmodning om samarbejde til ${beskedData.eventInfo.host} om føl
 }
 
 
-// funktionen: Vært B svarer på SMS, kalder denne funktion, den videresender beskeden til vært A 
-// bliver kaldt af 
-
-
+//Funktion der håndtere al kommunikation mellem værterne(Efter den første besked)
+// Bliver kaldet af vores webhook, som ligger i webhookController.js
 async function håndterIndkommendeSMS(fraNummer, twilioNummer, beskedTekst) {
-    // ekstra tjek om twilio er sat op
-    console.log("*****Client i håndterIndkommendeSMS******");
-    console.log(client);
+    //console.log("*****Client i håndterIndkommendeSMS******");
+    //console.log(client);
+
+    // Ekstra tjek om twilio er sat rigtigt op
     if (!client) {
-        return console.log("*****Fejl i henting af info fra Twilio*****");
+        return console.log("*****Fejl i hentning af info fra Twilio*****");
     }
 
-    console.log("*****håndterIndkommendeSMS indhold2*****");
+    console.log("*****håndterIndkommendeSMS indhold*****");
     console.log(fraNummer +":"+ twilioNummer + ":"+ beskedTekst);
 
+    //Kalder function "læsTelefonNumre", således at vi kender begge værters telefonnummer her
     console.log("*****Indlæsning af telefon numre****");
     let telefonNumre_dict = laesTelefonNumre();
-    console.log(telefonNumre_dict);
-    console.log(telefonNumre_dict[fraNummer]);
-    let intiatorTlfNummer = telefonNumre_dict[fraNummer];
-    console.log(telefonNumre_dict[intiatorTlfNummer]);
 
+    //console.log(telefonNumre_dict);
+    //console.log(telefonNumre_dict[fraNummer]);
 
-    console.log("*****VærtTelefoner****");
+    //Vi kender det nummer der har afsendt sms, derfor slår vi modtager nummer op, som vi gemt i json fil.
+
+    let tilNummer = telefonNumre_dict[fraNummer];
+
+    console.log("*****Alle numre****");
     console.log(fraNummer);
     console.log(twilioNummer);
-    console.log(telefonNumre_dict[fraNummer]);
+    console.log(tilNummer);
 
-    
-    if (telefonNumre_dict[fraNummer]) { // hvis Vært A's telefonnummer findes, send beskeden videre
+    //Sender til det modsatte nummer af fraNummer
+    if (tilNummer) { // hvis Vært A's telefonnummer findes, send beskeden videre
         // Send besked videre til Vært A
         console.log("*****Vi kommer ind i if værtatlf****");
 
         await client.messages.create({
             body: `Svar fra vært:\n\n${beskedTekst}\n\nSvar på denne SMS for at fortsætte samtalen.\n\n- Understory`,
             from: twilioPhoneNumber,
-            to: telefonNumre_dict[fraNummer] // send beskeden til Vært A
+            to: tilNummer // send beskeden til Vært A
         });
     }
 }
