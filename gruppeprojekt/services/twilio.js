@@ -2,6 +2,7 @@ const twilio = require('twilio');
 const fs = require('fs');
 const path = require('path');
 
+//Kalder til vores env fil og får info derfra
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
@@ -24,7 +25,7 @@ if (accountSid && authToken && twilioPhoneNumber) {
 // Værters telefonnumre 
 const værtTelefonnumre = {
     'Anna': '+4528684727',  // Emils nr 
-    'Tim': '+4591977138'    // Jans nr
+    'Tim': '+4531903444'    // Jans nr
 };
 
 // Tracking: værtB -> værtA så man kan videresende svar
@@ -36,11 +37,17 @@ function gemAktiveBeskeder() {
     const dataPakke = path.dirname(aktiveBeskederFil);
     if (!fs.existsSync(dataPakke)) { // existsSync søger efter filen, hvis den ikke findes, opret den
         fs.mkdirSync(dataPakke, { recursive: true }); // mkdirSync opretter mappen
+
+        // Gem tracking data til fil
+        // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
+        fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
+    } else {
+        console.log("******aktiveBeskeder findes allerede*****");
     }
     
     // Gem tracking data til fil
     // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
-    fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
+    //fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
 function laesAktiveBeskeder() {
@@ -244,8 +251,6 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
         // Gem til fil så det overlever server genstart
         gemAktiveBeskeder();
     }
-
-    console.log("******VærtAsTlfnummer udfyldt?*****");
 }
 
 module.exports = {
