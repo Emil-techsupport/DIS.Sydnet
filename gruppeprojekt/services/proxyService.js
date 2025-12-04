@@ -37,7 +37,7 @@ async function fetchHostEvents(hostNavn) {
     const cacheKey = `host_events_${hostNavn.toLowerCase()}`;
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      console.log(`Returning ${hostNavn} events from cache`);
+      console.log(`Returning ${hostNavn} events from cache ${cacheKey}`);
       return cachedData;
     }
     
