@@ -2,7 +2,7 @@ const twilio = require('twilio');
 const fs = require('fs');
 const path = require('path');
 
-//Kalder til vores env fil og får info derfra
+//Kalder til vores env fil og får info derfra.
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
@@ -37,17 +37,11 @@ function gemAktiveBeskeder() {
     const dataPakke = path.dirname(aktiveBeskederFil);
     if (!fs.existsSync(dataPakke)) { // existsSync søger efter filen, hvis den ikke findes, opret den
         fs.mkdirSync(dataPakke, { recursive: true }); // mkdirSync opretter mappen
-
-        // Gem tracking data til fil
-        // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
-        fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
-    } else {
-        console.log("******aktiveBeskeder findes allerede*****");
     }
     
     // Gem tracking data til fil
     // writeFileSync skriver data til filen, JSON.stringify konverterer objektet til en JSON streng, null, 2 indrykker dataene
-    //fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
+    fs.writeFileSync(aktiveBeskederFil, JSON.stringify(aktiveBeskeder, null, 2));
 }
 
 function laesAktiveBeskeder() {
@@ -221,6 +215,8 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
     let aktivebeskeder_dict = laesAktiveBeskeder();
     console.log(aktivebeskeder_dict);
     console.log(aktivebeskeder_dict[fraNummer]);
+    let intiatorTlfNummer = aktivebeskeder_dict[fraNummer];
+    console.log(aktivebeskeder_dict[intiatorTlfNummer]);
     // fraNummer = Vært B (den der lige har sendt beskeden)
     // Find Vært A's telefonnummer (den der skal modtage beskeden)
     // husk dette er en objekt dvs:
@@ -249,7 +245,7 @@ async function håndterIndkommendeSMS(fraNummer, tilNummer, beskedTekst) {
         //aktiveBeskeder[værtBsTlf] = fraNummer;
         
         // Gem til fil så det overlever server genstart
-        gemAktiveBeskeder();
+        //gemAktiveBeskeder();
     }
 }
 
