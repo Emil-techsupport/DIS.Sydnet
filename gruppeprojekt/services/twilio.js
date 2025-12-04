@@ -105,7 +105,7 @@ Du har sendt en anmodning til ${beskedData.eventInfo.host} om:
 
 - Understory`;
     
-    await client.messages.create({
+    await client.messages.create({ // send bekræftelsesbesked til afsender, dette er en twilio bibliotek funktion i stedet for at skrive kode manuelt link: https://www.twilio.com/docs/libraries/reference/twilio-node/
         body: bekræftelsesBesked,
         from: twilioPhoneNumber,
         to: beskedData.senderPhone

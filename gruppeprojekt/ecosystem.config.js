@@ -1,5 +1,5 @@
 // PM2 Ecosystem konfiguration
-// Kører din app på flere porte for load balancing
+
 // Brug: pm2 start ecosystem.config.js
 
 module.exports = {
