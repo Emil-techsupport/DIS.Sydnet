@@ -13,7 +13,6 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 // For AES er blokstørrelsen altid 128 bit som er 16 bytes
 const algorithm = 'aes-256-cbc';
 
-
 // Hent encryption key fra environment variable
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 

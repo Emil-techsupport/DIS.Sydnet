@@ -50,10 +50,12 @@ async function login(req, res) {
     const token = await signAsync(payload, SECRET, signOptions);
     
     // Gem JWT token i HTTP-only cookie med max age 1 time
+    // secure: true kun i production (HTTPS), false i development (HTTP)
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('jwt', token, {
       maxAge: 3600000, // 1 time (3600000ms = 60 min * 60 sek * 1000ms)
       httpOnly: true, // Sikrer at JavaScript ikke kan læse cookie (sikkerhed)
-      secure: true, // Kun send cookie over HTTPS (påkrævet for production)
+      secure: isProduction, // Kun send cookie over HTTPS i production
       sameSite: 'lax', // Beskytter mod CSRF angreb, tillader cross-site requests
       path: '/' // Cookie gælder for alle routes
     });
@@ -61,7 +63,7 @@ async function login(req, res) {
     // Send svar tilbage
     res.json({
       success: true,
-      message: 'Login succvirker',
+      message: 'Login succesfuldt',
       host: {
         navn: host.navn,
         email: host.email
@@ -79,9 +81,10 @@ async function login(req, res) {
 // Logout - når bruger logger ud
 function logout(req, res) {
   // Slet JWT cookie (skal have samme indstillinger som ved oprettelse)
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('jwt', {
     httpOnly: true,
-    secure: true,
+    secure: isProduction,
     sameSite: 'lax',
     path: '/'
   });
