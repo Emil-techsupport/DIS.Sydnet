@@ -14,7 +14,7 @@ const cache = require('./caching');
 //Henter events ud fra host og tilføjer RTT
 async function proxyRequest(host) {
   const start = Date.now();
-  const alleEvents = getEventsByHostName(host.navn);
+  const alleEvents = await getEventsByHostName(host.navn);
   const rtt = Date.now() - start;
   console.log(`${host.navn} - RTT: ${rtt}ms`);
   
@@ -29,18 +29,21 @@ async function proxyRequest(host) {
 }
 
 
-/**
- * Henter events for en specifik vært (kan bruges til alle hosts)
- *  Navnet på værten hvis events skal hentes
- */
+ // Henter events for en specifik vært (kan bruges til alle hosts)
+ // Navnet på værten hvis events skal hentes
+ 
 async function fetchHostEvents(hostNavn) {
   try {
+    const startTime = Date.now();
     const cacheKey = `host_events_${hostNavn.toLowerCase()}`;
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      console.log(`Returning ${hostNavn} events from cache ${cacheKey}`);
+      const responseTime = Date.now() - startTime;
+      console.log(`✅ [CACHE HIT] ${hostNavn} - Data hentet fra cache på ${responseTime}ms (${cacheKey})`);
       return cachedData;
     }
+    
+    console.log(`❌ [CACHE MISS] ${hostNavn} - Data IKKE i cache, henter fra datakilde...`);
     
     const hosts = getAllHosts();
     let host = null;
@@ -60,6 +63,8 @@ async function fetchHostEvents(hostNavn) {
     // Hent events for denne host
     const result = await proxyRequest(host);
     cache.set(cacheKey, result, 60000);
+    const totalTime = Date.now() - startTime;
+    console.log(`💾 [CACHE SET] ${hostNavn} - Data gemt i cache i 60 sekunder. Total tid: ${totalTime}ms (${cacheKey})`);
     
     return result;
 

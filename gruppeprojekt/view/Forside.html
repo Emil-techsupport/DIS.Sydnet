@@ -55,7 +55,7 @@
     <!-- Main content -->
     <main class="main">
       <div class="main-header">
-        <h1 class="title"> Dine Oplevelser/Events</h1>
+        <h1 class="title"> Dine Events</h1>
         <button class="primary-btn" id="oplevelserknap">+ Oplevelse</button>
       </div>
 
@@ -76,7 +76,8 @@
    // log ud funktion
     async function logout() {
       const response = await fetch('/api/auth/logout', {
-        method: 'POST'
+        method: 'POST',
+        credentials: 'include'
       });
       const result = await response.json();
       
@@ -96,12 +97,14 @@
     });
     
     // Kører når siden loader
-    // hvis bruger er loget ind, hent events fra Anna eller Tim
+    // hvis bruger er logget ind, hent events fra Anna eller Tim
     async function loadEvents() {
       const container = document.getElementById('events-container');
       
       // Tjek om bruger er logget ind
-      const authResponse = await fetch('/api/auth/me');
+      const authResponse = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
       const authResult = await authResponse.json();
       
       if (!authResult.success) {
@@ -201,20 +204,6 @@
           <div class="experience-subtitle">${subtitle}</div>
         </div>
         `;
-
-        /*
-        const button = document.createElement('button');
-        button.className = 'buttonUnderKort';
-        button.style.cursor = "pointer";
-        // Generer HTML 
-        button.innerHTML = `
-        <div class="experience-image">
-          <div class="draft-badge">"Hello world</div>
-        </div>
-        `;
-        */
-
-
         //console.log("*******check data Inden vi opretter eventlistner********");
         //console.log(eventData);
         //console.log(eventData.id);

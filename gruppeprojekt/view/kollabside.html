@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kollab - Sydnet</title>
+    <title>Samarbejd - Sydnet</title>
     <link rel="stylesheet" href="/forside.css">
     <link rel="stylesheet" href="/stylesheets/besked.css">
 </head>
@@ -52,7 +52,7 @@
         <!-- Main Content -->
         <main class="main">
             <div class="main-header">
-                <h1 class="title">Kollab om oplevelse</h1>
+                <h1 class="title">Samarbejd med andre oplevelser</h1>
             </div>
 
             <div class="main-content">
@@ -82,7 +82,7 @@
                         <div class="form-group">
                             <label for="message-text">Besked til værten</label>
                             <textarea id="message-text" name="messageText" required 
-                                      placeholder="Hej! Jeg vil gerne samarbejde om denne oplevelse. Jeg har erfaring med..."></textarea>
+                                      placeholder="Hej! Jeg vil gerne samarbejde med dig. Jeg afholder et event der ville passe perfekt til at slå sammen med dit!"></textarea>
                         </div>
                         
                         <button type="submit" class="cta-button">Send besked</button>
@@ -124,7 +124,9 @@
         async function hentEventsFraAPI() {
             try {
                 // Tjek om bruger er logget ind
-                const authResponse = await fetch('/api/auth/me');
+                const authResponse = await fetch('/api/auth/me', {
+                  credentials: 'include'
+                });
                 const authResult = await authResponse.json();
                 
                 if (!authResult.success) {
@@ -287,7 +289,8 @@
                     },
                     timestamp: new Date().toISOString()
                 };
-                
+                console.log("****Besked data event info host****");
+                console.log(beskedData.eventInfo.host)
                 try {
                     // Simuler afsendelse (i virkeligheden ville dette gå til en server)
                     await sendBesked(beskedData);
@@ -311,13 +314,17 @@
                 // Send besked til server som håndterer Twilio (twilio.js)
                 const response = await fetch('/api/kollab/send-sms', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        xTwilioWebhookEnabled: true
                     },
                     body: JSON.stringify(beskedData)
                 });
                 
                 const result = await response.json();
+                console.log("*****Result******");
+                console.log(result);
                 
                 if (!result.success) {
                     throw new Error(result.message || 'SMS kunne ikke sendes');
@@ -353,7 +360,9 @@
         // Tjek om bruger er logget ind
         async function checkLogin() {
             try {
-                const response = await fetch('/api/auth/me');
+                const response = await fetch('/api/auth/me', {
+                  credentials: 'include'
+                });
                 const result = await response.json();
                 
                 if (!result.success) {
@@ -396,7 +405,8 @@
         async function logout() {
         try {
             const response = await fetch('/api/auth/logout', {
-            method: 'POST'
+            method: 'POST',
+            credentials: 'include'
             });
             const result = await response.json();
             
@@ -414,7 +424,7 @@
         if (logoutBtn) {
             logoutBtn.addEventListener('click', logout);
         }
-        loadAllEvents();
+        //loadAllEvents();
     });
     </script>
 

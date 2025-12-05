@@ -15,15 +15,15 @@ const mockEvents = {
       dato: "2025-12-20",
       tidspunkt: "08:00",
       samarbejde: true,
-      lokation: "København",
+      lokation: "Helsingør",
       kategori: "Health & Yoga",
       eventkapacitet: "35 personer"
     },
     {
       værtID: 1,
       id: 2,
-      titel: "Aften Yoga ved Candlelight",
-      beskrivelse: "Afslappende yoga-session ved levende lys. Perfekt til at afslutte dagen med ro og mindfulness.",
+      titel: "Aften Yoga",
+      beskrivelse: "Afslappende yoga med levende lys. Perfekt til at afslutte dagen med ro og mindfulness.",
       varighed: "75 minutter",
       pris: 180,
       dato: "2025-12-21",
@@ -36,14 +36,14 @@ const mockEvents = {
     {
       værtID: 1,
       id: 3,
-      titel: "Power Yoga for Begyndere",
-      beskrivelse: "Dynamisk yoga-session for begyndere. Byg styrke og fleksibilitet i et støttende miljø.",
+      titel: "Power Yoga for alle niveauer",
+      beskrivelse: "Dynamisk yoga-session for alle. Byg styrke og fleksibilitet i et støttende miljø.",
       varighed: "60 minutter",
       pris: 160,
       dato: "2025-12-22",
       tidspunkt: "10:00",
       samarbejde: true,
-      lokation: "København",
+      lokation: "Odense",
       kategori: "Health & Yoga",
       eventkapacitet: "25 personer"
     }
@@ -54,36 +54,36 @@ const mockEvents = {
     {
       værtID: 2,
       id: 1,
-      titel: "Vinproveri med Lokale Vingårde",
+      titel: "Vinsmagning på lokale vingårde",
       beskrivelse: "Smag på udvalgte vine fra danske vingårde. Lær om vinens historie og smagsnoter fra eksperter.",
       varighed: "2 timer",
       pris: 350,
       dato: "2025-12-20",
       tidspunkt: "18:00",
       samarbejde: true,
-      lokation: "København",
+      lokation: "Hillerød",
       kategori: "Food & Tastings",
       eventkapacitet: "15 personer"
     },
     {
       værtID: 2,
       id: 2,
-      titel: "Rødvin Aften med Ost",
+      titel: "Delux pakke: Rødvin og Ost",
       beskrivelse: "Oplev en eksklusiv aften med udvalgte rødvine og lækre oste. Perfekt kombination af smag og atmosfære.",
       varighed: "2.5 timer",
-      pris: 450,
+      pris: 1000,
       dato: "2025-12-21",
       tidspunkt: "19:30",
       samarbejde: true,
-      lokation: "København",
+      lokation: "Helsingør",
       kategori: "Food & Tastings",
-      eventkapacitet: "12 personer"
+      eventkapacitet: "8 personer"
     },
     {
       værtID: 2,
       id: 3,
-      titel: "Champagne & Bubbles",
-      beskrivelse: "Fejr med champagne og bobler. Smag på forskellige champagner og lær om boblenes verden.",
+      titel: "Champagnesmagning",
+      beskrivelse: "Smag på forskellige champagner og lær om boblenes verden.",
       varighed: "1.5 timer",
       pris: 400,
       dato: "2025-12-22",
@@ -97,7 +97,7 @@ const mockEvents = {
 };
 
 // Funktion til at få alle events baseret på givent vært navn
-function getEventsByHostName(værtNavn) {
+async function getEventsByHostName(værtNavn) {
   
   //Får alle host med deres data ud i en variable der hedder "alleHosts"
   let alleHosts = getAllHosts();
