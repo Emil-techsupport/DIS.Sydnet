@@ -51,14 +51,17 @@ async function login(req, res) {
     
     // Gem JWT token i HTTP-only cookie med max age 1 time
     res.cookie('jwt', token, {
-      maxAge: 86400000, // 1 time 
-      httpOnly: true
+      maxAge: 3600000, // 1 time (3600000ms = 60 min * 60 sek * 1000ms)
+      httpOnly: true, // Sikrer at JavaScript ikke kan læse cookie (sikkerhed)
+      secure: true, // Kun send cookie over HTTPS (påkrævet for production)
+      sameSite: 'lax', // Beskytter mod CSRF angreb, tillader cross-site requests
+      path: '/' // Cookie gælder for alle routes
     });
     
     // Send svar tilbage
     res.json({
       success: true,
-      message: 'Login succesfuldt',
+      message: 'Login succvirker',
       host: {
         navn: host.navn,
         email: host.email
@@ -75,8 +78,13 @@ async function login(req, res) {
 
 // Logout - når bruger logger ud
 function logout(req, res) {
-  // Slet JWT cookie
-  res.clearCookie('jwt');
+  // Slet JWT cookie (skal have samme indstillinger som ved oprettelse)
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/'
+  });
   
   res.json({
     success: true,
