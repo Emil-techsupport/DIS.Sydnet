@@ -38,12 +38,9 @@ async function fetchHostEvents(hostNavn) {
     const cacheKey = `host_events_${hostNavn.toLowerCase()}`;
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      const responseTime = Date.now() - startTime;
-      console.log(`✅ [CACHE HIT] ${hostNavn} - Data hentet fra cache på ${responseTime}ms (${cacheKey})`);
+      console.log(`Returning ${hostNavn} events from cache`);
       return cachedData;
     }
-    
-    console.log(`❌ [CACHE MISS] ${hostNavn} - Data IKKE i cache, henter fra datakilde...`);
     
     const hosts = getAllHosts();
     let host = null;
