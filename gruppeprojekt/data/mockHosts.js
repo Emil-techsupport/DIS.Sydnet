@@ -20,7 +20,7 @@ const hosts = [
     værtID: 2,
     navn: "Tim",
     email: encrypt("tim@understory.dk"),
-    password: "$2b$10$rxMOn2eloHoGyyvquer.2u.8DcjjH1GF9zB7CpPOSF91AgxQKX/Fq", // hashed password, "tim123"
+    password: "$2b$10$LcgDF7j91rXPx6PIa8RTZuBuRfcAvk5qqTvMAZr3onimmcGlxxi2u", // hashed password, "tim123"
     telefonNr: encrypt("+4531903444"), // Krypteret telefonnummer
     lokation: "København",
     apiUrl: "https://jsonplaceholder.typicode.com/users" // idk om vi skal bruge det 
@@ -99,8 +99,8 @@ module.exports = {
 };
 
 // ************** test **************
-//let result = getAllHosts();
-//console.log(result);
+let result = getAllHosts();
+console.log(result);
  //************** test **************
 //let result = getHostById(1);
 //console.log(result);

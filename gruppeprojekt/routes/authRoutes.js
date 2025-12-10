@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-// POST /api/auth/login - Login
+// POST /api/auth/login - Login (IKKE beskyttet - man skal kunne logge ind)
 router.post('/login', authController.login);
 
-// POST /api/auth/logout - Log udd af bruger og slet JWT cookie
+// POST /api/auth/logout - Log udd af bruger og slet JWT cookie (IKKE beskyttet - man skal kunne logge ud)
 router.post('/logout', authController.logout);
 
 // GET /api/auth/me - Hent info om logget ind bruger tjekker om bruger er logget ind verificere JWT

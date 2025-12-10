@@ -81,10 +81,10 @@ async function login(req, res) {
 // Logout - når bruger logger ud
 function logout(req, res) {
   // Slet JWT cookie (skal have samme indstillinger som ved oprettelse)
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isSecure = req.secure || process.env.NODE_ENV === 'production';
   res.clearCookie('jwt', {
     httpOnly: true,
-    secure: isProduction,
+    secure: isSecure,
     sameSite: 'lax',
     path: '/'
   });

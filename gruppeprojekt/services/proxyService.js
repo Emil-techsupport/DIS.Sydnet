@@ -61,7 +61,7 @@ async function fetchHostEvents(hostNavn) {
     const result = await proxyRequest(host);
     cache.set(cacheKey, result, 60000);
     const totalTime = Date.now() - startTime;
-    console.log(`💾 [CACHE SET] ${hostNavn} - Data gemt i cache i 60 sekunder. Total tid: ${totalTime}ms (${cacheKey})`);
+    console.log(` CASH ${hostNavn} - Data gemt i cache i 60 sekunder. Total tid: ${totalTime}ms (${cacheKey})`);
     
     return result;
 
