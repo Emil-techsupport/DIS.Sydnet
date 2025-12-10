@@ -86,8 +86,8 @@ async function login(req, res) {
 
 // Logout - når bruger logger ud
 function logout(req, res) {
-  const isProduction = process.env.NODE_ENV === 'production';
   // Slet JWT cookie (skal have samme indstillinger som ved oprettelse)
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('jwt', {
     httpOnly: true,
     secure: isProduction,

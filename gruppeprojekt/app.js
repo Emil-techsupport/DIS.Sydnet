@@ -15,6 +15,11 @@ const kollabRouter = require('./routes/kollabRoutes');
 const authRouter = require('./routes/authRoutes');
 
 const app = express();
+
+// Trust proxy - vigtigt når nginx/load balancer sender requests videre
+// Gør at Express kan se om den oprindelige request var HTTPS (gennem X-Forwarded-Proto header)
+app.set('trust proxy', 1);
+
 // LOADBALANCING MIDDLEWARE
 // Middleware der logger hvilken server der modtager hver request
 // Dette hjælper med at se load balancing 

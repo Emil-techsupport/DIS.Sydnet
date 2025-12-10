@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const eventsController = require('../controllers/eventController');
+const { checkAuth } = require('../controllers/authController');
 
 
-// Route til at få fat i events for en given vært
-// Bliver kaldt således: '/services/hostEvents?host=' given host er forskellige alt efter hvad der skal bruges i koden
-router.get('/hostEvents', eventsController.getHostEvents);
+// Route til events for en specifik vært (dynamisk)
+// Eksempel: /services/hostEvents?host=Anna eller /services/hostEvents?host=Tim
+router.get('/hostEvents', checkAuth, eventsController.getHostEvents);
 
 module.exports = router;
 

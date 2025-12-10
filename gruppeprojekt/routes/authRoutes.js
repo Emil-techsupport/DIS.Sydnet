@@ -2,12 +2,10 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-// POST /api/auth/login - bliver kaldt i login.html
-// Bliver håndteret af "authController.js"'s login funktion
+// POST /api/auth/login - Login
 router.post('/login', authController.login);
 
-// Når denne POST /api/auth/logout bliver kaldt, så kaldes "authController.js" log out funktion
-// Logger bruger ud og sletter deres JWT
+// POST /api/auth/logout - Log udd af bruger og slet JWT cookie
 router.post('/logout', authController.logout);
 
 // GET /api/auth/me bliver kaldt i alle vores html sider, for at verificerer om bruger er logget ind og har godkendt JWT

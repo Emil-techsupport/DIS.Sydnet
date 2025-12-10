@@ -14,19 +14,19 @@ router.get('/', function(req, res) {
 router.get('/forside', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/Forside.html'));
 });
-/* Viser information om den enkelte oplevelse */
-router.get('/oplevelser', function(req, res) {
+
+router.get('/oplevelser', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/Oplevelser.html'));
 });
-/* Viser søge side, hvor man kan søge efter andre events at samarbejde med */
-router.get('/search', function(req, res) {
-  res.sendFile(path.join(__dirname, '../view/search.html'));
-});
-/* Viser kollab/samarbejde side */
-router.get('/kollab', function(req, res) {
+
+router.get('/kollab',  checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/kollabside.html'));
 });
-/* Viser log ind siden */
+
+router.get('/search', checkAuth, function(req, res) {
+  res.sendFile(path.join(__dirname, '../view/search.html'));
+});
+
 router.get('/login', function(req, res) {
   res.sendFile(path.join(__dirname, '../view/login.html'));
 });
