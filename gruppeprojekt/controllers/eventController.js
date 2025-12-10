@@ -1,13 +1,13 @@
+// Gør at vi kan bruge ting fra proxyService.js
 const proxyService = require('../services/proxyService');
 
-
-// Hent events for en vært
+// Hent events for en given vært
 async function getHostEvents(req, res) {
   try {
     // Hent vært navn fra URL
     const hostNavn = req.query.host;
     
-    // Tjek om vært navn er givet
+    // Tjek om vært navn er givet, hvis ikke så send en fejl tilbage
     if (!hostNavn) {
       return res.status(400).json({
         success: false,
@@ -15,10 +15,10 @@ async function getHostEvents(req, res) {
       });
     }
     
-    // Hent events for værten
+    // Hent events for værten, ved hjælp af "fetchHostsEvents" fra proxyService.js
     const results = await proxyService.fetchHostEvents(hostNavn);
 
-    // Send svar tilbage
+    // Send svar tilbage med information
     res.json({
       success: true,
       data: results
@@ -32,7 +32,7 @@ async function getHostEvents(req, res) {
   }
 }
 
-// Eksporterer funktionerne så de kan bruges i routes
+// Eksporterer funktionen så den kan bruges i andre filer
 module.exports = {
   getHostEvents
 };

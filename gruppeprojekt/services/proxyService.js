@@ -31,7 +31,6 @@ async function proxyRequest(host) {
 
  // Henter events for en specifik vært (kan bruges til alle hosts)
  // Navnet på værten hvis events skal hentes
- 
 async function fetchHostEvents(hostNavn) {
   try {
     const startTime = Date.now();
@@ -61,7 +60,7 @@ async function fetchHostEvents(hostNavn) {
     const result = await proxyRequest(host);
     cache.set(cacheKey, result, 60000);
     const totalTime = Date.now() - startTime;
-    console.log(`💾 [CACHE SET] ${hostNavn} - Data gemt i cache i 60 sekunder. Total tid: ${totalTime}ms (${cacheKey})`);
+    console.log(`Data gemt i cache i 60 sekunder. Total tid: ${totalTime}ms (${cacheKey})`);
     
     return result;
 
