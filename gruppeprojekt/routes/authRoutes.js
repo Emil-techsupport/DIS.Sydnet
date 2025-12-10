@@ -4,9 +4,14 @@ const authController = require('../controllers/authController');
 
 // POST /api/auth/login - Login
 router.post('/login', authController.login);
+//    Route til login IKKE middleware
+//    Alle kan kalde denne (ingen checkAuth)
+
 
 // POST /api/auth/logout - Log udd af bruger og slet JWT cookie
 router.post('/logout', authController.logout);
+//    Route til logout IKKE middleware
+//    Alle kan kalde denne (ingen checkAuth)
 
 // GET /api/auth/me bliver kaldt i alle vores html sider, for at verificerer om bruger er logget ind og har godkendt JWT
 router.get('/me', authController.checkAuth, (req, res) => {

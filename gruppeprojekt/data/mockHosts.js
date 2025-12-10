@@ -14,7 +14,7 @@ const hosts = [
     password: "$2b$10$9bOXFXIjk6qoDXRW63B0NOcRdCPjZaPIzYmZyetPEgAAp.aBENfGG", // hashed password, "anna123"
     telefonNr: encrypt("+4528684727"), // Krypteret telefonnummer
     lokation: "København",
-    apiUrl: "https://jsonplaceholder.typicode.com/posts" // idk om vi skal bruge det 
+  
   },
   {
     værtID: 2,
@@ -23,7 +23,6 @@ const hosts = [
     password: "$2b$10$LcgDF7j91rXPx6PIa8RTZuBuRfcAvk5qqTvMAZr3onimmcGlxxi2u", // hashed password, "tim123"
     telefonNr: encrypt("+4531903444"), // Krypteret telefonnummer
     lokation: "København",
-    apiUrl: "https://jsonplaceholder.typicode.com/users" // idk om vi skal bruge det 
   }
 ];
 
