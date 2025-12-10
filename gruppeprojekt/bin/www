@@ -1,63 +1,46 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
-// Indlæs environment variables fra .env fil 
+// Indlæs .env fil så dens indhold kan bruges.
 require('dotenv').config();
 
 var app = require('../app');
 var debug = require('debug')('gruppeprojekt:server');
 var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
-
+// Sæt port nummer ved hjælp af funktion
 var port = normalizePort(process.env.PORT || '3000');
 console.log('PORT environment variable:', process.env.PORT);
 console.log('Server will listen on port:', port);
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
+// Opretter en HTTP server.
 var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+// Sætter serveren til at lytte på porten der er sat op
 server.listen(port);
+// Hvis serveren fejler under opstart, så kalder vi "onError" funktion
 server.on('error', onError);
+// Når serveren er starter og lytter på vores port, så kalder vi "onListening" funktionen
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
+//funktion omdanne og tjekke portnummer
 function normalizePort(val) {
+  //Laver vores port nummer fra en streng til et tal
   var port = parseInt(val, 10);
 
+  //Hvis dette ikke lykkes, så returner den value der blev givet til funktionen
   if (isNaN(port)) {
-    // named pipe
     return val;
   }
-
+  //Hvis "port" variablen er blevet til et nummer og det er større end 0, så returner dette nummer
   if (port >= 0) {
-    // port number
     return port;
   }
-
+  //Som default returner false
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
+//Funktion der bliver kaldt i tilfælde af en server fejl
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -67,7 +50,7 @@ function onError(error) {
     ? 'Pipe ' + port
     : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
+  // Håndtere forskellige fejl med forskellige beskeder:
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
@@ -82,10 +65,7 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
+//Funktion der kaldes, hvis det lykkes at starte serveren uden problemer.
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'

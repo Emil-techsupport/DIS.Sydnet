@@ -1,5 +1,5 @@
 /*
-Symettrisk kryptering: bruger samme nøgle til at kryptere og dekryptere data
+Symmetrisk kryptering: bruger samme nøgle til at kryptere og dekryptere data
 Asymmetrisk kryptering: bruger forskellige nøgler til at kryptere og dekryptere data
 */
 // Baseret på AES-256-CBC symmetrisk kryptering

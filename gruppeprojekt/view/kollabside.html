@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samarbejd - Sydnet</title>
     <link rel="stylesheet" href="/forside.css">
-    <link rel="stylesheet" href="/stylesheets/besked.css">
+    <link rel="stylesheet" href="/besked.css">
 </head>
 <body>
     <div class="app">
@@ -58,7 +58,6 @@
             <div class="main-content">
                 <!-- Event Information -->
                 <div id="event-info" class="experience-card">
-                    <!-- Event info vil blive indsat her -->
                 </div>
 
                 <!-- Message Form -->
@@ -101,7 +100,7 @@
         // Globale variabler
         let currentEventData = null;
 
-        // Hent event-data fra URL, vi henter det data vi genere fra search og laver det til json så vi kan arbejde med det 
+        // Hent event-data fra URL, vi henter det data vi genere fra search og laver det til json, så vi kan arbejde med det 
         function hentEventDataFraURL() {
             // Hent URL parametre
             const urlParams = new URLSearchParams(window.location.search);

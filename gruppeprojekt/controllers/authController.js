@@ -1,16 +1,21 @@
-// Controller til login/logout
+/*****Controller til login/logout*******/
+//Gør det muligt at bruge jsonwebtokens
 const jwt = require('jsonwebtoken');
 const util = require('util');
 require('dotenv').config();
 
+//Gør det muligt at bruge funktioner fra mockhosts
 const { findHostMedEmailOgPassword, getHostById } = require('../data/mockHosts');
 
+//Læser vores secret key, 
 const SECRET = process.env.SECRET;
 const signAsync = util.promisify(jwt.sign);
 const verifyAsync = util.promisify(jwt.verify);
 
 // Login - når bruger logger ind
+// Route bliver kaldt i login.html og sendt videre hertil fra authRoutes.js
 async function login(req, res) {
+  //Får email og password ud
   const { email, password } = req.body;
   
   // Tjek om email og password er givet
@@ -46,12 +51,13 @@ async function login(req, res) {
   };
   
   try {
-    // vi kryptere vores token så man ikke kan læse det fordi der er jo bruger informationer i det og sikrer at det er autentisk
+    // vi kryptere vores token, så man ikke kan læse det.
     const token = await signAsync(payload, SECRET, signOptions);
     
-    // Gem JWT token i HTTP-only cookie med max age 1 time
     // secure: true kun i production (HTTPS), false i development (HTTP)
     const isProduction = process.env.NODE_ENV === 'production';
+
+    // Gem JWT token i cookie(max 1 time)
     res.cookie('jwt', token, {
       maxAge: 3600000, // 1 time (3600000ms = 60 min * 60 sek * 1000ms)
       httpOnly: true, // Sikrer at JavaScript ikke kan læse cookie (sikkerhed)
@@ -60,7 +66,7 @@ async function login(req, res) {
       path: '/' // Cookie gælder for alle routes
     });
     
-    // Send svar tilbage
+    // Send svar tilbage til login.html
     res.json({
       success: true,
       message: 'Login succesfuldt',
@@ -80,8 +86,9 @@ async function login(req, res) {
 
 // Logout - når bruger logger ud
 function logout(req, res) {
+  const isProduction = process.env.NODE_ENV === 'production';
   // Slet JWT cookie (skal have samme indstillinger som ved oprettelse)
-  const isSecure = req.secure || process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('jwt', {
     httpOnly: true,
     secure: isSecure,
@@ -108,15 +115,15 @@ async function checkAuth(req, res, next) {
     // Verificer token altå passer det med vores SECRET for brugeren
     const decoded = await verifyAsync(token, SECRET);
 
-    // Dette:
-// Tjekker om signaturen er korrekt (bruger samme SECRET)
-// Tjekker om tokenet er udløbet
-//  Returnerer payload hvis alt er OK
+    // Overstående linje tjekker følgende:
+      // Tjekker om signaturen er korrekt (bruger samme SECRET)
+      // Tjekker om tokenet er udløbet
+      // Returnerer payload hvis alt er OK
 
     // Find vært fra token fordi vi har værtID i token
     const host = getHostById(decoded.værtID);
     
-    // Hvis vært ikke findes, slet cookie og redirect
+    // Hvis vært ikke findes, slet cookie og redirect tilbage til log ind
     if (!host) {
       res.clearCookie('jwt');
       return res.redirect('/login');
@@ -124,7 +131,9 @@ async function checkAuth(req, res, next) {
     
     // Tilføj vært info til request
     req.user = host;
-    next(); // Fortæller at vi kan fortsætte med requesten
+    // Fortæller at vi kan fortsætte med requesten
+    next(); 
+
   } catch (error) {
     // Token er ugyldig eller udløbet
     res.clearCookie('jwt');
@@ -132,6 +141,7 @@ async function checkAuth(req, res, next) {
   }
 }
 
+//Gør at vi kan bruge følgende funktioner andre steder.
 module.exports = {
   login,
   logout,

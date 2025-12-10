@@ -47,12 +47,13 @@ async function findHostMedEmailOgPassword(email, password) {
       }
     }
   }
-  
   // Hvis ingen host findes med denne email, returner undefined
   return undefined;
 }
 
-// Helper funktion til at dekryptere telefonNr og email i host objekt
+//***************Krypterings funktioner********************//
+
+// Hjælpe funktion til at dekryptere telefonNr og email i host objekt
 function decryptHostTlfOgMail(host) {
   if (!host) return host;
   return {
@@ -98,6 +99,7 @@ module.exports = {
   findHostMedEmailOgPassword
 };
 
+/**********Testing***********/
 // ************** test **************
 let result = getAllHosts();
 console.log(result);
