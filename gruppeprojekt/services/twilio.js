@@ -26,7 +26,7 @@ if (accountSid && authToken && twilioPhoneNumber) {
 // Værters telefonnumre 
 const værtTelefonnumre = {
     'Anna': '+4528684727',  // Emils nr 
-    'Tim': '+4591977138'    // Meda nr
+    'Tim': '+4531903444'    // Meda nr
 };
 
 //Variabel(Dictionary) til at putte numre ind i
