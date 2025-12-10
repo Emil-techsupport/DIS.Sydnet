@@ -1,16 +1,9 @@
 // services/caching.js
-// Simpel memory cache med TTL (Time To Live)
-// Cache gemmer data i memory og sletter automatisk når TTL udløber
-// HVAD CASHER VI: Data fra API'er (jsonplaceholder.typicode.com) 
-// som vi gemmer i serverens memory (RAM) 
 // Objekt til at gemme cached data
 const cache = {};
 
-/*
-  Henter data fra cache
- nøgle (fx 'events_all_hosts')
-  Cached data eller null hvis ikke fundet/udløbet
- */
+// Henter data fra cache nøgle (fx 'events_all_hosts')
+// Bliver kaldt gennem authRoutes.js
 function get(key) {
   // Hent item fra cache objekt
   const item = cache[key];
@@ -21,32 +14,24 @@ function get(key) {
   }
   
   // Tjek om cache er udløbet
-  // Date.now() = nuværende tid
-  // item.expires = tidspunkt hvor cache udløber
-  // Hvis nuværende tid > udløbstid = cache er udløbet
   if (Date.now() > item.expires) {
-    // Slet udløbet cache entry
+    // Slet udløbet cache data
     delete cache[key];
     return null;
   }
   
-  // Cache er gyldig, returner data
+  // Hvis cache er gyldig, så returner data
   return item.data;
 }
 
-/**
- * Gemmer data i cache
- * - Cache nøgle (fx 'events_all_hosts')
- *  Data der skal gemmes
- * Time To Live i millisekunder (60000 = 60 sekunder)
- */
+// Gemmer data i cache (i 60 sekunder)
 function set(key, value, ttl = 60000) {
-  // Gem data i cache objekt med expires tidspunkt
-  // expires = nuværende tid + TTL (fx nu + 60 sekunder)
+  // Gem data i cache sammen med udløbnings tidspunkt
   cache[key] = {
-    data: value,                    // Gem data
-    expires: Date.now() + ttl      // Beregn udløbstidspunkt
+    data: value,                    
+    expires: Date.now() + ttl      
   };
 }
 
-module.exports = { get, set }; // vi eksporterer get og set funktionerne så de kan bruges i andre filer
+// Vi eksporterer get og set funktionerne så de kan bruges i andre filer
+module.exports = { get, set }; 

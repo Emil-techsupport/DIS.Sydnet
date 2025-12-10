@@ -10,7 +10,7 @@ router.post('/login', authController.login);
 // Logger bruger ud og sletter deres JWT
 router.post('/logout', authController.logout);
 
-// GET /api/auth/me bliver kaldt i alle vores html sider, for at verificerer om briger er logget ind og har godkendt JWT
+// GET /api/auth/me bliver kaldt i alle vores html sider, for at verificerer om bruger er logget ind og har godkendt JWT
 router.get('/me', authController.checkAuth, (req, res) => {
   // checkAuth middleware verificerer JWT token
   // Hvis OK, returnerer bruger info så vi kan bruge det i vores frontend
