@@ -15,15 +15,15 @@ router.get('/forside', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/Forside.html'));
 });
 
-router.get('/oplevelser', function(req, res) {
+router.get('/oplevelser', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/Oplevelser.html'));
 });
 
-router.get('/kollab', function(req, res) {
+router.get('/kollab',  checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/kollabside.html'));
 });
 
-router.get('/search', function(req, res) {
+router.get('/search', checkAuth, function(req, res) {
   res.sendFile(path.join(__dirname, '../view/search.html'));
 });
 

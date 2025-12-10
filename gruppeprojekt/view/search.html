@@ -332,7 +332,7 @@
       try {
         const response = await fetch('/api/auth/logout', {
           method: 'POST',
-          credentials: 'include'
+          credentials: 'include' // Hvis ikke logget ind -> send til login siden
         });
         const result = await response.json();
         
