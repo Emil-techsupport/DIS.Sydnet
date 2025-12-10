@@ -18,21 +18,7 @@ const app = express();
 
 // Trust proxy - vigtigt når nginx/load balancer sender requests videre
 // Gør at Express kan se om den oprindelige request var HTTPS (gennem X-Forwarded-Proto header)
-app.set('trust proxy', 1);
 
-// LOADBALANCING MIDDLEWARE
-// Middleware der logger hvilken server der modtager hver request
-// Dette hjælper med at se load balancing 
-app.use(function(req, res, next) {
-  // Hent hvilken port denne server kører på (4000, 4001 eller 4002)
-  const serverPort = req.socket.localPort;
-  
-  // Log hvilken server der modtog requesten
-  console.log('[Server Port ' + serverPort + '] Modtog request: ' + req.method + ' ' + req.url);
-  
-  // next () er en indbygget funktionalitet i express som gør at vi kan fortsætte til næste middleware eller route handler
-  next();
-});
 
 app.use(logger('dev')); // middleware der logger requesten arbejder med morgan
 // Vigtigt: urlencoded skal være true for Twilio webhooks (de sender form-data)

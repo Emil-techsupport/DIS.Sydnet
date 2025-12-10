@@ -104,8 +104,8 @@
     async function inputEventInfo(){
 
       // Får information om bruger der er logget ind
-      const loggetIndBruger = await fetch('/api/auth/me', {
-        credentials: 'include'
+      const loggetIndBruger = await fetch('/api/auth/me', { // husk alle routes skal have checkAuth middleware først
+        credentials: 'include' // Hvis ikke logget ind -> send til login siden
       });
       const loggetIndBrugerInfo = await loggetIndBruger.json();
 
