@@ -18,7 +18,8 @@ const app = express();
 
 // Trust proxy - vigtigt når nginx/load balancer sender requests videre
 // Gør at Express kan se om den oprindelige request var HTTPS (gennem X-Forwarded-Proto header)
-
+// Dette er nødvendigt når applikationen kører bag NGINX reverse proxy/load balancer
+app.set('trust proxy', 1);
 
 app.use(logger('dev')); // middleware der logger requesten arbejder med morgan
 // Vigtigt: urlencoded skal være true for Twilio webhooks (de sender form-data)
