@@ -11,9 +11,14 @@ Mulighed 1 er bare at tilgå vores webapplikation på nettet, via vores domæne 
 Dette vil giver jer mulighed for at teste applikationen en del af vejen. 
 
 # 1.2 Log ind
-Først vil I blive mødt af vores log ind side, og her kan I f.eks. gøre brug af følgende af vores 2 brugere, og logge ind via nederstående mail og adgangskode:
+Først vil I blive mødt af vores log ind side, og her kan I logge ind som en af vores 2 brugere, via nederstående mail og adgangskode:
+Bruger Anna: 
 Email: anna@understory.dk
 Password: anna123
+
+Bruger Tim:
+Email: tim@understory.dk
+Password: tim123
 
 # 1.3 Forside
 Her vil I blive mødt af den præcis samme side som vi fremviser i vores video
@@ -65,8 +70,12 @@ For at indsætte jeres egne telefonnumre til koden, kan I tilgå vores twilio.js
 
 # 2.6 Log ind
 I kan her igen bruge samme log ind info som i mulighed 1:
+Bruger Anna: 
 Email: anna@understory.dk
 Password: anna123
 
+Bruger Tim:
+Email: tim@understory.dk
+Password: tim123
 
 
