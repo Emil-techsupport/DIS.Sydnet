@@ -21,16 +21,11 @@ Email: tim@understory.dk
 Password: tim123
 
 # 1.3 Forside
-Her vil I blive mødt af den præcis samme side som vi fremviser i vores video
-Dog vil I med denne løsning ikke have mulighed for, at sende beskeder ligesom det er fremvist i videoen. Dette skyldes at vi har fjernet Twilio SID, Token og Telefon nummer fra .env filen. 
-
-Så for at få dette til at virke, så skal I bruge information fra jeres egen Twilio konto, og sætte det ind i en .env fil
-Skabelon:
-TWILIO_ACCOUNT_SID=
-TWILIO_AUTH_TOKEN=
-TWILIO_PHONE_NUMBER=
-
-Når I sender en besked fra vores samarbejde side, så vil jeres besked ende hos en fra vores gruppe, og vil vi derfra kunne svare frem og tilbage.
+Her vil I blive mødt af den præcis samme side som vi fremviser i vores video.
+Herfra vil I kunne følgende samme steps som videoen for at komme ind på vores samarbejde side. 
+Her vil I kunne indsætte et navn og et telefonnummer. 
+Når I sender en besked fra vores samarbejde side, så vil der komme en besked til det nummer i har indsat, om at beskeden er blevet sendt.
+Derudover vil der komme en besked til en fra vores gruppe, og I vil derfra kunne skrive frem og tilbage, ligesom det er vist i vores video.
 
 
 **Løsning 2**
@@ -60,6 +55,9 @@ Ligesom i mulighed 1, vil I skulle oprette og tilføje jeres egne Twilio keys i 
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
+
+# 2.4 Skabelse af SECRET og ENCRYPTION_KEY 
+For at kunne logge ind skal I også skabe jeres egne secret og encryption keys
 
 # 2.4 Start server og gå til browser
 For at starte serveren, skal I blot skrive "npm start" i terminalen(I en stig der peger på "gruppeprojekt" filen).
