@@ -62,13 +62,9 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    successMessage.textContent = `Velkommen ${result.host.navn}!`;
-                    successMessage.style.display = 'block';
-                    
-                    // Redirect til forsiden efter 1 sekund
-                    setTimeout(() => {
-                        window.location.href = '/forside';
-                    }, 1000);
+                    // Redirect til forsiden
+                    window.location.href = '/forside';
+
                 } else {
                     errorMessage.textContent = result.message || 'Forkert email eller password';
                     errorMessage.style.display = 'block';
