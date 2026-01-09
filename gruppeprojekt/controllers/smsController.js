@@ -2,7 +2,7 @@
 // "sendSMSTilVært" håndtere SMS-afsendelse via Twilio
 const { sendSMSTilVært } = require('../services/twilio');
 
-// Send SMS til vært B
+// Samel information så, der kan sendes SMS til vært B
  async function sendKollabSMS(req, res) {
     try {
         // Her pakker vi beskedens body ud som kommer fra kollabside.html(Indeholder skabelon besked)

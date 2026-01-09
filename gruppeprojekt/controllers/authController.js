@@ -122,7 +122,7 @@ async function checkAuth(req, res, next) {
     // Find vært fra token fordi vi har værtID i token
     const host = getHostById(decoded.værtID);
     
-    // Hvis vært ikke findes, slet cookie og redirect tilbage til log ind
+    // Hvis vært ikke findes, slet cookie og redirect tilbage til logind
     if (!host) {
       res.clearCookie('jwt');
       return res.redirect('/login');

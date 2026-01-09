@@ -23,7 +23,7 @@ if (accountSid && authToken && twilioPhoneNumber) {
 }
 
 
-// Værters telefonnumre 
+// Værters telefonnumre sættes i variabel, der bliver brugt i sendSMSTilVært funktion
 const værtTelefonnumre = {
     'Anna': '+4528684727',  // Emils nr 
     'Tim': '+4591977138'    // Meda nr
@@ -162,7 +162,7 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
         //console.log("***** Client *******");
         //console.log(client);
     
-    //Her sender vi beskeden til vært B via Twilio api
+    //Her sender vi beskeden til Vært B via Twilio api
     const message = await client.messages.create({
         body: smsBesked,
         from: twilioPhoneNumber,
@@ -170,7 +170,7 @@ Svar på denne SMS for at kontakte ${beskedData.senderName}.
     });
 
     
-    console.log("****Første besked fra Vært A til vært B****");
+    console.log("****Første besked fra Vært A til Vært B****");
     console.log(message);
 
 

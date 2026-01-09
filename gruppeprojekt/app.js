@@ -34,16 +34,19 @@ app.use(function(req, res, next) {
   next();
 });
 
+//Morgan logging middelware
 app.use(logger('dev')); // middleware der logger requesten arbejder med morgan
 // Vigtigt: urlencoded skal være true for Twilio webhooks (de sender form-data)
 app.use(express.json()); // middleware der håndterer JSON data
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // middleware der håndterer cookies
+
+//Helmet setup
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      // UDEN DETTE MÅ VI IKKE LOGGE IN DA HELMET BLOCKER INLINE SCRIPTS OG HASHING 
+      // UDEN DETTE MÅ VI IKKE LOGGE IND DA HELMET BLOCKER INLINE SCRIPTS OG HASHING 
       scriptSrc: ["'self'", "'unsafe-inline'"], // Tillad inline scripts
       styleSrc: ["'self'", "'unsafe-inline'"], // Tillad inline styles
     },
