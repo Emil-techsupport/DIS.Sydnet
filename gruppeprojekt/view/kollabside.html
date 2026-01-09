@@ -124,7 +124,7 @@
             try {
                 // Tjek om bruger er logget ind
                 const authResponse = await fetch('/api/auth/me', {
-                  credentials: 'include'
+                  credentials: 'include' // Hvis ikke logget ind -> send til login siden
                 });
                 const authResult = await authResponse.json();
                 

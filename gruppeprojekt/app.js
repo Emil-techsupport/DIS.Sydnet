@@ -18,6 +18,7 @@ const app = express();
 
 // Trust proxy - vigtigt når nginx/load balancer sender requests videre
 // Gør at Express kan se om den oprindelige request var HTTPS (gennem X-Forwarded-Proto header)
+// Dette er nødvendigt når applikationen kører bag NGINX reverse proxy/load balancer
 app.set('trust proxy', 1);
 
 // LOADBALANCING MIDDLEWARE
