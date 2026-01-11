@@ -36,7 +36,7 @@ async function findHostMedEmailOgPassword(email, password) {
     // Hvis email matcher, tjek password
     if (dekrypteretEmail === email) {
       // Verificer password med bcrypt
-      const erPasswordGood = await bcrypt.compare(password, host.password);
+      const erPasswordGood = await bcrypt.compare(password, host.password); // bcrypt er en asynkron operation vi skal vente på den 
       
       // Hvis password matcher, returner host (med dekrypteret telefonNr og email)
       if (erPasswordGood) {
@@ -80,7 +80,7 @@ function getHostById(værtID) {
   return undefined;
 }
 
-function getHostsByLocation(lokation) {
+/*function getHostsByLocation(lokation) {
   const result = [];
   for (let i = 0; i < hosts.length; i++) {
     if (hosts[i].lokation === lokation) {
@@ -88,7 +88,7 @@ function getHostsByLocation(lokation) {
     }
   }
   return result; // Returnerer alle hosts med dekrypteret telefonNr og email
-}
+}*/
 
 
 module.exports = {

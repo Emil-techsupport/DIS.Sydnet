@@ -121,14 +121,14 @@
 
       //Find givent eventId der er klikket på ud fra sidens URL navn
       const params = new URLSearchParams(window.location.search);
-      const clickedEventId = params.get("event");
+      const clickedEventId = params.get("event"); // forside.tml returnenrer dette
 
       console.log("********ClickedEvent.ID*********")
       console.log(clickedEventId);
 
       /*Kalder til "proxyService.js" for at få mockdata om hosts og events*/
       const response = await fetch("/services/hostEvents?host=" + loggetIndHostNavn);
-      const hostOgEventDataClient = await response.json();
+      const hostOgEventDataClient = await response.json(); 
 
       //console.log("*******Host og event data samlet******")
       //console.log(hostOgEventDataClient);

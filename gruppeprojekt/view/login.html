@@ -49,10 +49,10 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             
-            try {
+            try { // sender data til login-endpoint
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    credentials: 'include',
+                    credentials: 'include', // gør at vi sender cookies med requesten
                     headers: {
                         'Content-Type': 'application/json'
                     },
